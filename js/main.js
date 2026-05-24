@@ -35,6 +35,7 @@ window.addEventListener('DOMContentLoaded', () => {
   loadCatalogFromStorage(); // Fetches ghazals.json and defaults
   updateFonts();
   initResponsiveCard(); // Initialize dynamic card scaling for responsiveness
+  initCanvasNavigation(); // Enable dynamic mouse scroll & touch swipe navigation on the preview canvas
 });
 
 // Tab Switching Navigation Logic
@@ -255,6 +256,60 @@ function nextCouplet() {
   const total = activeGhazal.couplets.length;
   const newIndex = (curCoupletIndex + 1) % total;
   selectCouplet(newIndex);
+}
+
+// Enable dynamic mouse wheel scroll & touch swipe navigation on the preview canvas card
+function initCanvasNavigation() {
+  const viewport = document.querySelector('.view-port');
+  if (!viewport) return;
+
+  // 1. Mouse Wheel / Trackpad Scroll Navigation (Throttled)
+  let lastScrollTime = 0;
+  const scrollThrottleMs = 400; // Prevents fast multiple skips
+
+  viewport.addEventListener('wheel', (e) => {
+    // Only intercept scroll if it's a significant vertical or horizontal scroll
+    if (Math.abs(e.deltaY) < 10 && Math.abs(e.deltaX) < 10) return;
+    
+    e.preventDefault(); // Prevent page scroll
+    
+    const now = Date.now();
+    if (now - lastScrollTime < scrollThrottleMs) return;
+    lastScrollTime = now;
+
+    if (e.deltaY > 0 || e.deltaX > 0) {
+      nextCouplet();
+    } else {
+      prevCouplet();
+    }
+  }, { passive: false });
+
+  // 2. Touch Swipe Navigation for Mobile
+  let touchStartX = 0;
+  let touchStartY = 0;
+  const swipeThreshold = 40; // minimum pixels swiped to trigger
+
+  viewport.addEventListener('touchstart', (e) => {
+    touchStartX = e.changedTouches[0].screenX;
+    touchStartY = e.changedTouches[0].screenY;
+  }, { passive: true });
+
+  viewport.addEventListener('touchend', (e) => {
+    const touchEndX = e.changedTouches[0].screenX;
+    const touchEndY = e.changedTouches[0].screenY;
+
+    const diffX = touchEndX - touchStartX;
+    const diffY = touchEndY - touchStartY;
+
+    // Detect horizontal swipes (dominant swipe action)
+    if (Math.abs(diffX) > Math.abs(diffY) && Math.abs(diffX) > swipeThreshold) {
+      if (diffX < 0) {
+        nextCouplet();
+      } else {
+        prevCouplet();
+      }
+    }
+  }, { passive: true });
 }
 
 
