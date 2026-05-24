@@ -20,20 +20,18 @@
       <div class="sidebar-subtitle">Interactive Poetry Engine</div>
     </div>
 
-    <!-- Tabs Navigation (Carousel scrollable on mobile) -->
+    <!-- Tabs Navigation (Perfect size same on desktop & mobile) -->
     <div class="tabs-nav">
-      <button class="tab-btn active" onclick="switchTab('ghazal')">Ghazals</button>
+      <button class="tab-btn active" onclick="switchTab('ghazal')">Ghazal</button>
       <button class="tab-btn" onclick="switchTab('couplets')">Slides</button>
       <button class="tab-btn" onclick="switchTab('lines')">Lines</button>
-      <button class="tab-btn" onclick="switchTab('meanings')">Meanings</button>
-      <button class="tab-btn" onclick="switchTab('presets')">Themes</button>
-      <button class="tab-btn" onclick="switchTab('custom')">Custom</button>
+      <button class="tab-btn" onclick="switchTab('style')">Style</button>
     </div>
 
-    <!-- TAB 1: GHAZAL PROJECTS -->
+    <!-- TAB 1: GHAZAL PROJECT & SIGNATURE -->
     <div id="tab-ghazal" class="tab-content active">
       <div class="section-title">Ghazal Project</div>
-      <div class="form-group" style="background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05);">
+      <div class="form-group" style="background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05); margin-bottom: 12px;">
         <label class="form-label" for="select-ghazal-project" style="color: #a5b4fc; font-weight: 700; display: flex; justify-content: space-between; align-items: center;">
           <span>Select Active Ghazal</span>
           <span style="font-size: 9px; background: rgba(165, 180, 252, 0.1); padding: 2px 6px; border-radius: 4px;">Collection</span>
@@ -46,6 +44,16 @@
           <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px;" onclick="createNewGhazalProject()" title="Create new blank Ghazal">+ New</button>
           <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px; color: #f87171;" onclick="deleteCurrentGhazalProject()" title="Delete active Ghazal">Delete</button>
         </div>
+      </div>
+
+      <div class="section-title">Poet & Signature</div>
+      <div class="form-group">
+        <label class="form-label" for="input-poet">Poet / Takhallus (Top Left)</label>
+        <input type="text" id="input-poet" class="form-input" placeholder="/कुमार" oninput="updateSignatures()" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="input-handle">Signature Handle (Top Right)</label>
+        <input type="text" id="input-handle" class="form-input" placeholder="@thoughtskumar" oninput="updateSignatures()" />
       </div>
     </div>
 
@@ -69,7 +77,7 @@
       </div>
     </div>
 
-    <!-- TAB 3: COMPOSE LINES -->
+    <!-- TAB 3: COMPOSE LINES & MEANINGS -->
     <div id="tab-lines" class="tab-content">
       <div class="section-title">Compose Couplet</div>
       <div class="form-group">
@@ -88,19 +96,7 @@
         <label class="form-label" for="input-eng2">English Line 2 (Roman)</label>
         <input type="text" id="input-eng2" class="form-input" placeholder="English line 2..." oninput="updateCurrentSherText()" />
       </div>
-      <div class="section-title">Poet & Signature</div>
-      <div class="form-group">
-        <label class="form-label" for="input-poet">Poet / Takhallus (Top Left)</label>
-        <input type="text" id="input-poet" class="form-input" placeholder="/कुमार" oninput="updateSignatures()" />
-      </div>
-      <div class="form-group">
-        <label class="form-label" for="input-handle">Signature Handle (Top Right)</label>
-        <input type="text" id="input-handle" class="form-input" placeholder="@thoughtskumar" oninput="updateSignatures()" />
-      </div>
-    </div>
 
-    <!-- TAB 4: WORD MEANINGS -->
-    <div id="tab-meanings" class="tab-content">
       <div class="section-title">Annotations & Meanings</div>
       <button class="btn-secondary" style="margin-bottom: 8px; width: 100%;" onclick="openAnnotationModal()">+ Add Word Meaning</button>
       <div id="annotations-list-ui" style="display: flex; flex-direction: column; gap: 8px;">
@@ -108,8 +104,8 @@
       </div>
     </div>
 
-    <!-- TAB 5: PRESET THEMES -->
-    <div id="tab-presets" class="tab-content">
+    <!-- TAB 4: STYLING SUITE (Themes & Custom Styles) -->
+    <div id="tab-style" class="tab-content">
       <div class="section-title">Layout Style</div>
       <div class="btn-grid" style="margin-bottom: 12px;">
         <button id="btn-layout-centered" class="ctrl-btn active" onclick="applyLayout('centered')">Classic Centered</button>
@@ -137,6 +133,7 @@
           <option value="'Montserrat', sans-serif">Montserrat (Modern Sans)</option>
         </select>
       </div>
+
       <div class="section-title">Color Themes presets</div>
       <div class="form-group">
         <label class="form-label">Subtle presets</label>
@@ -150,16 +147,13 @@
           <!-- Populated by presets in theme.js -->
         </div>
       </div>
-      <div class="form-group">
+      <div class="form-group" style="margin-bottom: 16px;">
         <label class="form-label">Two-Tone presets</label>
         <div class="btn-grid themes-twotone" id="themes-twotone">
           <!-- Populated by presets in theme.js -->
         </div>
       </div>
-    </div>
 
-    <!-- TAB 6: CUSTOM STYLING -->
-    <div id="tab-custom" class="tab-content">
       <div class="section-title">Custom Styling Studio</div>
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
         <input type="checkbox" id="toggle-custom-styling" onchange="toggleCustomStylingMode()" style="cursor: pointer; width: 16px; height: 16px;">
@@ -241,13 +235,11 @@
           </div>
           <input type="range" id="range-card-padding" min="60" max="180" value="100" oninput="applyCustomColors()" />
         </div>
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; margin-bottom: 24px;">
           <label for="toggle-lines-visible" style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #d4d4d8; cursor: pointer;">Show Card Border Lines</label>
           <input type="checkbox" id="toggle-lines-visible" checked onchange="applyCustomColors()" style="cursor: pointer; width: 16px; height: 16px;">
         </div>
       </div>
-    </div>
-  </div>
     </div>
   </div>
 
