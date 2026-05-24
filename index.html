@@ -20,60 +20,74 @@
       <div class="sidebar-subtitle">Interactive Poetry Engine</div>
     </div>
 
-    <!-- Ghazal Selector Dropdown Section -->
-    <div class="form-group" style="margin-bottom: 20px; background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05);">
-      <label class="form-label" for="select-ghazal-project" style="color: #a5b4fc; font-weight: 700; display: flex; justify-content: space-between; align-items: center;">
-        <span>Select Ghazal</span>
-        <span style="font-size: 9px; background: rgba(165, 180, 252, 0.1); padding: 2px 6px; border-radius: 4px;">Collection</span>
-      </label>
-      <select id="select-ghazal-project" class="form-select" style="margin-top: 6px;" onchange="switchGhazalProject(parseInt(this.value))">
-        <!-- Dynamic options -->
-      </select>
-      <div style="display: flex; gap: 6px; margin-top: 8px;">
-        <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px;" onclick="renameCurrentGhazal()" title="Rename active Ghazal">Rename</button>
-        <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px;" onclick="createNewGhazalProject()" title="Create new blank Ghazal">+ New</button>
-        <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px; color: #f87171;" onclick="deleteCurrentGhazalProject()" title="Delete active Ghazal">Delete</button>
+    <!-- Tabs Navigation (Carousel scrollable on mobile) -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('ghazal')">Ghazals</button>
+      <button class="tab-btn" onclick="switchTab('couplets')">Slides</button>
+      <button class="tab-btn" onclick="switchTab('lines')">Lines</button>
+      <button class="tab-btn" onclick="switchTab('meanings')">Meanings</button>
+      <button class="tab-btn" onclick="switchTab('presets')">Themes</button>
+      <button class="tab-btn" onclick="switchTab('custom')">Custom</button>
+    </div>
+
+    <!-- TAB 1: GHAZAL PROJECTS -->
+    <div id="tab-ghazal" class="tab-content active">
+      <div class="section-title">Ghazal Project</div>
+      <div class="form-group" style="background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05);">
+        <label class="form-label" for="select-ghazal-project" style="color: #a5b4fc; font-weight: 700; display: flex; justify-content: space-between; align-items: center;">
+          <span>Select Active Ghazal</span>
+          <span style="font-size: 9px; background: rgba(165, 180, 252, 0.1); padding: 2px 6px; border-radius: 4px;">Collection</span>
+        </label>
+        <select id="select-ghazal-project" class="form-select" style="margin-top: 6px;" onchange="switchGhazalProject(parseInt(this.value))">
+          <!-- Dynamic options -->
+        </select>
+        <div style="display: flex; gap: 6px; margin-top: 8px;">
+          <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px;" onclick="renameCurrentGhazal()" title="Rename active Ghazal">Rename</button>
+          <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px;" onclick="createNewGhazalProject()" title="Create new blank Ghazal">+ New</button>
+          <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px; color: #f87171;" onclick="deleteCurrentGhazalProject()" title="Delete active Ghazal">Delete</button>
+        </div>
       </div>
     </div>
 
-    <!-- Tabs Navigation -->
-    <div class="tabs-nav">
-      <button class="tab-btn active" onclick="switchTab('editor')">Editor</button>
-      <button class="tab-btn" onclick="switchTab('catalog')">Saved List</button>
-      <button class="tab-btn" onclick="switchTab('design')">Design</button>
+    <!-- TAB 2: COUPLETS LIST -->
+    <div id="tab-couplets" class="tab-content">
+      <div class="section-title">Couplets (Slides)</div>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button class="btn-primary" style="flex: 1; font-size: 11px; padding: 8px 10px;" onclick="createNewSher()">+ Add New Sher</button>
+        <button class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px 10px;" onclick="resetToPresets()">Reset All</button>
+      </div>
+      <div class="sher-list-container" id="saved-shers-list">
+        <!-- Saved shers list items go here -->
+      </div>
+      <div class="section-title">Backup & Restore</div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px;" onclick="exportCatalog()">Export JSON</button>
+        <label class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px; cursor: pointer; text-align: center;">
+          Import JSON
+          <input type="file" id="import-json-file" style="display:none;" onchange="importCatalog(event)" accept=".json">
+        </label>
+      </div>
     </div>
 
-    <!-- TAB 1: EDITOR PANEL -->
-    <div id="tab-editor" class="tab-content active">
+    <!-- TAB 3: COMPOSE LINES -->
+    <div id="tab-lines" class="tab-content">
       <div class="section-title">Compose Couplet</div>
       <div class="form-group">
         <label class="form-label" for="input-line1">Line 1 (Devnagari)</label>
         <input type="text" id="input-line1" class="form-input" placeholder="पहली पंक्ति लिखें..." oninput="updateCurrentSherText()" />
       </div>
-
       <div class="form-group">
         <label class="form-label" for="input-line2">Line 2 (Devnagari)</label>
         <input type="text" id="input-line2" class="form-input" placeholder="दूसरी पंक्ति लिखें..." oninput="updateCurrentSherText()" />
       </div>
-
       <div class="form-group">
         <label class="form-label" for="input-eng1">English Line 1 (Roman)</label>
         <input type="text" id="input-eng1" class="form-input" placeholder="English line 1..." oninput="updateCurrentSherText()" />
       </div>
-
       <div class="form-group">
         <label class="form-label" for="input-eng2">English Line 2 (Roman)</label>
         <input type="text" id="input-eng2" class="form-input" placeholder="English line 2..." oninput="updateCurrentSherText()" />
       </div>
-
-      <div class="section-title">Annotations & Meanings</div>
-      <div class="form-group">
-        <button class="btn-secondary" style="margin-bottom: 8px;" onclick="openAnnotationModal()">+ Add Word Meaning</button>
-        <div id="annotations-list-ui" style="display: flex; flex-direction: column; gap: 8px;">
-          <!-- Inline annotations will render here -->
-        </div>
-      </div>
-
       <div class="section-title">Poet & Signature</div>
       <div class="form-group">
         <label class="form-label" for="input-poet">Poet / Takhallus (Top Left)</label>
@@ -85,35 +99,22 @@
       </div>
     </div>
 
-    <!-- TAB 2: SAVED CATALOG -->
-    <div id="tab-catalog" class="tab-content">
-      <div class="section-title">My Poetry Catalog</div>
-      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-        <button class="btn-primary" style="flex: 1; font-size: 11px; padding: 8px 10px;" onclick="createNewSher()">+ Add New Sher</button>
-        <button class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px 10px;" onclick="resetToPresets()">Reset to Default</button>
-      </div>
-      <div class="sher-list-container" id="saved-shers-list">
-        <!-- Saved shers list items go here -->
-      </div>
-
-      <div class="section-title">Import / Export Catalog</div>
-      <div style="display: flex; gap: 8px;">
-        <button class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px;" onclick="exportCatalog()">Export JSON</button>
-        <label class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px; cursor: pointer; text-align: center;">
-          Import JSON
-          <input type="file" id="import-json-file" style="display:none;" onchange="importCatalog(event)" accept=".json">
-        </label>
+    <!-- TAB 4: WORD MEANINGS -->
+    <div id="tab-meanings" class="tab-content">
+      <div class="section-title">Annotations & Meanings</div>
+      <button class="btn-secondary" style="margin-bottom: 8px; width: 100%;" onclick="openAnnotationModal()">+ Add Word Meaning</button>
+      <div id="annotations-list-ui" style="display: flex; flex-direction: column; gap: 8px;">
+        <!-- Inline annotations will render here -->
       </div>
     </div>
 
-    <!-- TAB 3: DESIGN SUITE -->
-    <div id="tab-design" class="tab-content">
+    <!-- TAB 5: PRESET THEMES -->
+    <div id="tab-presets" class="tab-content">
       <div class="section-title">Layout Style</div>
-      <div class="btn-grid">
+      <div class="btn-grid" style="margin-bottom: 12px;">
         <button id="btn-layout-centered" class="ctrl-btn active" onclick="applyLayout('centered')">Classic Centered</button>
         <button id="btn-layout-left" class="ctrl-btn" onclick="applyLayout('left')">Modern Left-Aligned</button>
       </div>
-
       <div class="section-title">Typography Suite</div>
       <div class="form-group">
         <label class="form-label" for="select-font-dev">Hindi (Devnagari) Font</label>
@@ -125,8 +126,7 @@
           <option value="'Montserrat', sans-serif">Montserrat (Geometric Sans)</option>
         </select>
       </div>
-
-      <div class="form-group">
+      <div class="form-group" style="margin-bottom: 12px;">
         <label class="form-label" for="select-font-rom">Roman (English) Font</label>
         <select id="select-font-rom" class="form-select" onchange="updateFonts()">
           <option value="'IM Fell English', serif">IM Fell English (Classic Serif)</option>
@@ -137,35 +137,34 @@
           <option value="'Montserrat', sans-serif">Montserrat (Modern Sans)</option>
         </select>
       </div>
-
-      <div class="section-title">Theme presets</div>
+      <div class="section-title">Color Themes presets</div>
       <div class="form-group">
         <label class="form-label">Subtle presets</label>
         <div class="btn-grid" id="themes-subtle">
-          <!-- Populated by presets in app.js -->
+          <!-- Populated by presets in theme.js -->
         </div>
       </div>
-
       <div class="form-group">
         <label class="form-label">High-Contrast presets</label>
         <div class="btn-grid themes-contrast" id="themes-contrast">
-          <!-- Populated by presets in app.js -->
+          <!-- Populated by presets in theme.js -->
         </div>
       </div>
-
       <div class="form-group">
         <label class="form-label">Two-Tone presets</label>
         <div class="btn-grid themes-twotone" id="themes-twotone">
-          <!-- Populated by presets in app.js -->
+          <!-- Populated by presets in theme.js -->
         </div>
       </div>
+    </div>
 
+    <!-- TAB 6: CUSTOM STYLING -->
+    <div id="tab-custom" class="tab-content">
       <div class="section-title">Custom Styling Studio</div>
-      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
         <input type="checkbox" id="toggle-custom-styling" onchange="toggleCustomStylingMode()" style="cursor: pointer; width: 16px; height: 16px;">
         <label for="toggle-custom-styling" style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #a5b4fc; cursor: pointer;">Enable Custom Styles</label>
       </div>
-
       <div id="custom-styling-controls" style="opacity: 0.4; pointer-events: none; transition: opacity 0.2s ease; display: flex; flex-direction: column; gap: 12px;">
         <div class="color-picker-row">
           <div class="color-input-container">
@@ -177,7 +176,6 @@
             <span class="color-label">Devnagari Text</span>
           </div>
         </div>
-
         <div class="color-picker-row">
           <div class="color-input-container">
             <input type="color" id="cp-roman" class="color-picker" oninput="applyCustomColors()" value="#78716c">
@@ -188,7 +186,6 @@
             <span class="color-label">Meaning Text</span>
           </div>
         </div>
-
         <div class="color-picker-row">
           <div class="color-input-container">
             <input type="color" id="cp-lines" class="color-picker" oninput="applyCustomColors()" value="#e5e0d8">
@@ -199,7 +196,6 @@
             <span class="color-label">Signature / Tag</span>
           </div>
         </div>
-
         <div class="form-group">
           <label class="form-label" for="select-bg-style">Background Style</label>
           <select id="select-bg-style" class="form-select" onchange="applyCustomColors()">
@@ -208,7 +204,6 @@
             <option value="gradient-radial">Radial Gradient</option>
           </select>
         </div>
-
         <div id="gradient-pickers" class="color-picker-row" style="display: none;">
           <div class="color-input-container">
             <input type="color" id="cp-grad-start" class="color-picker" oninput="applyCustomColors()" value="#ffffff">
@@ -219,14 +214,12 @@
             <span class="color-label">Grad End</span>
           </div>
         </div>
-
         <div class="form-group">
           <label class="form-label" for="input-bg-image">Background Image URL</label>
           <input type="text" id="input-bg-image" class="form-input" placeholder="https://images.unsplash.com/photo-..." oninput="applyCustomColors()" />
           <div style="font-size: 10px; color: #71717a; margin-top: 4px;">OR upload a local image file below:</div>
           <input type="file" id="input-bg-image-file" class="form-input" style="padding: 4px; font-size:11px;" accept="image/*" onchange="handleLocalImageUpload(event)" />
         </div>
-
         <div class="range-container">
           <div class="range-val">
             <span>Image Opacity</span>
@@ -234,7 +227,6 @@
           </div>
           <input type="range" id="range-bg-opacity" min="0" max="100" value="10" oninput="applyCustomColors()" />
         </div>
-
         <div class="range-container">
           <div class="range-val">
             <span>Image Blur</span>
@@ -242,7 +234,6 @@
           </div>
           <input type="range" id="range-bg-blur" min="0" max="40" value="0" oninput="applyCustomColors()" />
         </div>
-
         <div class="range-container">
           <div class="range-val">
             <span>Layout Card Padding</span>
@@ -250,12 +241,13 @@
           </div>
           <input type="range" id="range-card-padding" min="60" max="180" value="100" oninput="applyCustomColors()" />
         </div>
-
         <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
           <label for="toggle-lines-visible" style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #d4d4d8; cursor: pointer;">Show Card Border Lines</label>
           <input type="checkbox" id="toggle-lines-visible" checked onchange="applyCustomColors()" style="cursor: pointer; width: 16px; height: 16px;">
         </div>
       </div>
+    </div>
+  </div>
     </div>
   </div>
 

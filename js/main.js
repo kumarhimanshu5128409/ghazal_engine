@@ -89,9 +89,10 @@ function adjustCardScale() {
   const viewPort = document.querySelector('.view-port');
   if (!mainArea || !viewPort) return;
 
-  // Define safety margins
-  const horizontalPadding = 32; // 16px on each side
-  const verticalPadding = 120;  // Space for bottom floating bar and margins
+  // Define dynamic safety margins for mobile vs desktop
+  const isMobile = window.innerWidth < 1024;
+  const horizontalPadding = isMobile ? 16 : 32;
+  const verticalPadding = isMobile ? 80 : 120; // More vertical breathing room on mobile
   
   const availableWidth = mainArea.clientWidth - horizontalPadding;
   const availableHeight = mainArea.clientHeight - verticalPadding;
