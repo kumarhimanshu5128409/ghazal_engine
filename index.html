@@ -25,6 +25,7 @@
       <button class="tab-btn active" onclick="switchTab('ghazal')">Ghazal</button>
       <button class="tab-btn" onclick="switchTab('lines')">Lines</button>
       <button class="tab-btn" onclick="switchTab('style')">Style</button>
+      <button class="tab-btn" onclick="switchTab('custom')">Custom</button>
     </div>
 
     <!-- TAB 1: GHAZAL PROJECT & SIGNATURE -->
@@ -132,7 +133,10 @@
           <!-- Populated by presets in theme.js -->
         </div>
       </div>
+    </div>
 
+    <!-- TAB 5: CUSTOM STYLING STUDIO -->
+    <div id="tab-custom" class="tab-content">
       <div class="section-title">Custom Styling Studio</div>
       <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;">
         <input type="checkbox" id="toggle-custom-styling" onchange="toggleCustomStylingMode()" style="cursor: pointer; width: 16px; height: 16px;">
