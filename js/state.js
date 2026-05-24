@@ -5,7 +5,7 @@
 const DEFAULT_PRESET_GHAZALS = [
   {
     "title": "दबी दिल्लगी से हम",
-    "tag": "ग़ज़ल",
+    "poet": "/कुमार",
     "handle": "@thoughtskumar",
     "couplets": [
       {
@@ -48,7 +48,7 @@ const DEFAULT_PRESET_GHAZALS = [
       {
         "line 1": "आलम ने है इस दिल को यूं, प्यासा बिठा रखा",
         "line 2": "अब सुकून सा पाते हैं, इसी तिश्नगी से हम",
-        "english line 1": "aalam ne hai iss dil ko yoon, pyaasa bitha rakha,",
+        "english line 1": "aalam ne hai iss dil को yoon, pyaasa bitha rakha,",
         "english line 2": "ab sukoon saa paate hain, isi tishnagi se hum.",
         "meanings": {
           "तिश्नगी": "प्यास"
@@ -67,7 +67,7 @@ const DEFAULT_PRESET_GHAZALS = [
   },
   {
     "title": "इश्क़ का कारवाँ",
-    "tag": "नज़्म",
+    "poet": "/कुमार",
     "handle": "@thoughtskumar",
     "couplets": [
       {
@@ -85,7 +85,7 @@ const DEFAULT_PRESET_GHAZALS = [
         "english line 1": "hazaar mushkilein hon par yeh hausla rahe,",
         "english line 2": "chiraag bankar jalne ka silsila rahe.",
         "meanings": {
-          "सिलसिला": "क्रम/दौर"
+          "सिलसला": "क्रम/दौर"
         }
       },
       {
@@ -180,7 +180,7 @@ function createNewGhazalProject() {
 
   const newGhazal = {
     "title": title,
-    "tag": "ग़ज़ल",
+    "poet": "/कुमार",
     "handle": ghazals[curGhazalIndex] ? ghazals[curGhazalIndex].handle : "@thoughtskumar",
     "couplets": [
       {

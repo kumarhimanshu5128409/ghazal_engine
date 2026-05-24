@@ -18,14 +18,15 @@ function selectCouplet(index) {
   const e2 = document.getElementById('input-eng2');
   if (e2) e2.value = couplet['english line 2'] || '';
   
-  const tag = document.getElementById('input-tag');
-  if (tag) tag.value = activeGhazal.tag || 'ग़ज़ल';
+  const poet = document.getElementById('input-poet');
+  if (poet) poet.value = activeGhazal.poet || '/कुमार';
   const handle = document.getElementById('input-handle');
   if (handle) handle.value = activeGhazal.handle || '@thoughtskumar';
 
   renderAnnotationsUI();
   renderCardCanvas();
   renderSavedListUI();
+  renderNavigation();
 }
 
 // Window load pipeline hook
@@ -106,6 +107,109 @@ function adjustCardScale() {
   viewPort.style.setProperty('--card-scale', scale);
   viewPort.style.width = `${targetSize}px`;
   viewPort.style.height = `${targetSize}px`;
+}
+
+// Render Saved Couplets catalog in the "Saved List" Tab panel
+function renderSavedListUI() {
+  const container = document.getElementById('saved-shers-list');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const activeGhazal = ghazals[curGhazalIndex];
+  if (!activeGhazal || !activeGhazal.couplets) return;
+
+  activeGhazal.couplets.forEach((couplet, index) => {
+    const item = document.createElement('div');
+    item.className = `sher-item ${index === curCoupletIndex ? 'active' : ''}`;
+    
+    const line1 = couplet['line 1'] || '';
+    const line2 = couplet['line 2'] || '';
+    const previewText = line1 || line2 ? `${line1} / ${line2}` : 'Empty couplet';
+
+    item.innerHTML = `
+      <div class="sher-item-header">
+        <span class="sher-item-num">Couplet ${String(index + 1).padStart(2, '0')}</span>
+        <div class="sher-item-actions">
+          <button class="sher-action-btn" title="Move Up" onclick="event.stopPropagation(); moveCouplet(${index}, -1)">▲</button>
+          <button class="sher-action-btn" title="Move Down" onclick="event.stopPropagation(); moveCouplet(${index}, 1)">▼</button>
+          <button class="sher-action-btn" style="color: #ef4444;" title="Delete" onclick="event.stopPropagation(); deleteCouplet(${index})">🗑️</button>
+        </div>
+      </div>
+      <div class="sher-item-preview">${previewText}</div>
+    `;
+
+    item.addEventListener('click', () => {
+      selectCouplet(index);
+    });
+
+    container.appendChild(item);
+  });
+}
+
+// Render dynamic pagination buttons & arrow controllers in floating bottom bar
+function renderNavigation() {
+  const container = document.getElementById('nav-dots');
+  if (!container) return;
+  container.innerHTML = '';
+
+  const activeGhazal = ghazals[curGhazalIndex];
+  if (!activeGhazal || !activeGhazal.couplets) return;
+
+  const total = activeGhazal.couplets.length;
+
+  // 1. Previous page arrow (<)
+  const prevBtn = document.createElement('button');
+  prevBtn.innerHTML = '&lt;'; // `<` character
+  prevBtn.title = 'Previous Couplet';
+  prevBtn.style.fontWeight = 'bold';
+  prevBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    prevCouplet();
+  });
+  container.appendChild(prevBtn);
+
+  // 2. Circular page index buttons
+  for (let i = 0; i < total; i++) {
+    const dotBtn = document.createElement('button');
+    dotBtn.innerText = String(i + 1).padStart(2, '0'); // Render as 01, 02...
+    if (i === curCoupletIndex) {
+      dotBtn.className = 'active';
+    }
+    dotBtn.title = `Go to Couplet ${i + 1}`;
+    dotBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      selectCouplet(i);
+    });
+    container.appendChild(dotBtn);
+  }
+
+  // 3. Next page arrow (>)
+  const nextBtn = document.createElement('button');
+  nextBtn.innerHTML = '&gt;'; // `>` character
+  nextBtn.title = 'Next Couplet';
+  nextBtn.style.fontWeight = 'bold';
+  nextBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    nextCouplet();
+  });
+  container.appendChild(nextBtn);
+}
+
+// Navigation helpers
+function prevCouplet() {
+  const activeGhazal = ghazals[curGhazalIndex];
+  if (!activeGhazal || !activeGhazal.couplets) return;
+  const total = activeGhazal.couplets.length;
+  const newIndex = (curCoupletIndex - 1 + total) % total;
+  selectCouplet(newIndex);
+}
+
+function nextCouplet() {
+  const activeGhazal = ghazals[curGhazalIndex];
+  if (!activeGhazal || !activeGhazal.couplets) return;
+  const total = activeGhazal.couplets.length;
+  const newIndex = (curCoupletIndex + 1) % total;
+  selectCouplet(newIndex);
 }
 
 

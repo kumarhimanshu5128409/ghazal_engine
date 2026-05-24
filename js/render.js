@@ -17,7 +17,7 @@ function updateCurrentSherText() {
 
 function updateSignatures() {
   const activeGhazal = ghazals[curGhazalIndex];
-  activeGhazal.tag = document.getElementById('input-tag').value;
+  activeGhazal.poet = document.getElementById('input-poet').value;
   activeGhazal.handle = document.getElementById('input-handle').value;
 
   saveCatalogToStorage();
@@ -49,8 +49,8 @@ function renderCardCanvas() {
   const romDisplay = document.getElementById('card-rom-display');
   if (romDisplay) romDisplay.innerHTML = romHtml.replace(/\n/g, '<br>');
 
-  const cardTag = document.getElementById('card-tag');
-  if (cardTag) cardTag.innerText = activeGhazal.tag || 'ग़ज़ल';
+  const cardPoet = document.getElementById('card-poet');
+  if (cardPoet) cardPoet.innerText = activeGhazal.poet || '/कुमार';
   const cardHandle = document.getElementById('card-handle');
   if (cardHandle) cardHandle.innerText = activeGhazal.handle || '@thoughtskumar';
 
