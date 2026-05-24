@@ -148,52 +148,96 @@ function renderSavedListUI() {
 }
 
 // Render dynamic pagination buttons & arrow controllers in floating bottom bar
+// Render dynamic pagination buttons & arrow controllers in floating bottom bar
 function renderNavigation() {
   const container = document.getElementById('nav-dots');
   if (!container) return;
-  container.innerHTML = '';
 
   const activeGhazal = ghazals[curGhazalIndex];
   if (!activeGhazal || !activeGhazal.couplets) return;
 
   const total = activeGhazal.couplets.length;
 
-  // 1. Previous page arrow (<)
-  const prevBtn = document.createElement('button');
-  prevBtn.innerHTML = '&lt;'; // `<` character
-  prevBtn.title = 'Previous Couplet';
-  prevBtn.style.fontWeight = 'bold';
-  prevBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    prevCouplet();
-  });
-  container.appendChild(prevBtn);
+  // Re-populate DOM only if the total buttons count changes
+  if (container.querySelectorAll('.nav-number').length !== total) {
+    container.innerHTML = '';
 
-  // 2. Circular page index buttons
-  for (let i = 0; i < total; i++) {
-    const dotBtn = document.createElement('button');
-    dotBtn.innerText = String(i + 1).padStart(2, '0'); // Render as 01, 02...
-    if (i === curCoupletIndex) {
-      dotBtn.className = 'active';
-    }
-    dotBtn.title = `Go to Couplet ${i + 1}`;
-    dotBtn.addEventListener('click', (e) => {
+    // 1. Previous page arrow (<)
+    const prevBtn = document.createElement('button');
+    prevBtn.innerHTML = '&lt;';
+    prevBtn.className = 'nav-arrow prev-arrow';
+    prevBtn.title = 'Previous Couplet';
+    prevBtn.style.fontWeight = 'bold';
+    prevBtn.addEventListener('click', (e) => {
       e.stopPropagation();
-      selectCouplet(i);
+      prevCouplet();
     });
-    container.appendChild(dotBtn);
+    container.appendChild(prevBtn);
+
+    // 2. Circular page index buttons
+    for (let i = 0; i < total; i++) {
+      const dotBtn = document.createElement('button');
+      dotBtn.innerText = String(i + 1).padStart(2, '0');
+      dotBtn.className = 'nav-number';
+      dotBtn.title = `Go to Couplet ${i + 1}`;
+      dotBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        selectCouplet(i);
+      });
+      container.appendChild(dotBtn);
+    }
+
+    // 3. Next page arrow (>)
+    const nextBtn = document.createElement('button');
+    nextBtn.innerHTML = '&gt;';
+    nextBtn.className = 'nav-arrow next-arrow';
+    nextBtn.title = 'Next Couplet';
+    nextBtn.style.fontWeight = 'bold';
+    nextBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      nextCouplet();
+    });
+    container.appendChild(nextBtn);
+
+    // Dynamic swipe scroll listener for mobile snap nav
+    let isProgrammaticScroll = false;
+    let scrollTimeout;
+
+    container.addEventListener('scroll', () => {
+      if (window.innerWidth >= 1024) return; // Only on mobile
+      if (isProgrammaticScroll) return;
+
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(() => {
+        const buttonWidth = 28; // Mobile button width
+        const index = Math.round(container.scrollLeft / buttonWidth);
+        if (index >= 0 && index < total && index !== curCoupletIndex) {
+          isProgrammaticScroll = true;
+          selectCouplet(index);
+          setTimeout(() => { isProgrammaticScroll = false; }, 50);
+        }
+      }, 80); // Debounce to allow scroll snapping to settle
+    });
   }
 
-  // 3. Next page arrow (>)
-  const nextBtn = document.createElement('button');
-  nextBtn.innerHTML = '&gt;'; // `>` character
-  nextBtn.title = 'Next Couplet';
-  nextBtn.style.fontWeight = 'bold';
-  nextBtn.addEventListener('click', (e) => {
-    e.stopPropagation();
-    nextCouplet();
+  // Update active state and auto-center scroll position on mobile
+  const numbers = container.querySelectorAll('.nav-number');
+  numbers.forEach((btn, i) => {
+    if (i === curCoupletIndex) {
+      btn.classList.add('active');
+      
+      // Auto scroll active slide into view on mobile
+      if (window.innerWidth < 1024) {
+        const buttonWidth = 28;
+        container.scrollTo({
+          left: i * buttonWidth,
+          behavior: 'smooth'
+        });
+      }
+    } else {
+      btn.classList.remove('active');
+    }
   });
-  container.appendChild(nextBtn);
 }
 
 // Navigation helpers

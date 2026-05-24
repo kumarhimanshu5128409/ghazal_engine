@@ -1082,9 +1082,44 @@ input[type="range"]::-webkit-slider-thumb:hover {
     justify-content: center !important;
   }
   
-  /* Hide inactive numeric buttons on mobile/tablet to fit both navigation & downloads in a single row */
-  .nav button:not(.active):not(:first-child):not(:last-child) {
-    display: none;
+  .nav {
+    display: flex !important;
+    overflow-x: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+    scroll-snap-type: x mandatory !important;
+    width: 28px !important; /* Exactly fits one button on mobile */
+    height: 28px !important;
+    gap: 0 !important;
+    scrollbar-width: none !important; /* Hide scrollbar for Firefox */
+    border: 1px solid rgba(255, 255, 255, 0.15) !important;
+    border-radius: 50% !important;
+    padding: 0 !important;
+    overflow-y: hidden !important;
+  }
+  
+  .nav::-webkit-scrollbar {
+    display: none !important; /* Hide scrollbar for Safari/Chrome */
+  }
+
+  .nav button.nav-number {
+    flex: 0 0 28px !important;
+    width: 28px !important;
+    height: 28px !important;
+    scroll-snap-align: center !important;
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    border-radius: 50% !important;
+  }
+
+  .nav button.nav-number.active {
+    background: #6366f1 !important;
+    color: white !important;
+  }
+
+  /* Hide the arrows on mobile since we scroll/swipe the number */
+  .nav button.nav-arrow {
+    display: none !important;
   }
 
   /* Compact actions and download buttons for mobile */
