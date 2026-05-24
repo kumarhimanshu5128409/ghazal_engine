@@ -1070,8 +1070,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
   }
 
-  /* Make all buttons inside the floating bar compact on mobile to guarantee flawless fit */
-  .bottom-bar button, .bottom-bar .nav button {
+  /* Make operation & action buttons compact on mobile to guarantee flawless fit */
+  .bottom-bar button:not(.nav-number) {
     width: 28px !important;
     height: 28px !important;
     min-width: 28px !important;
@@ -1087,12 +1087,12 @@ input[type="range"]::-webkit-slider-thumb:hover {
     overflow-x: auto !important;
     -webkit-overflow-scrolling: touch !important;
     scroll-snap-type: x mandatory !important;
-    width: 28px !important; /* Exactly fits one button on mobile */
+    width: 48px !important; /* Exactly fits one capsule on mobile */
     height: 28px !important;
     gap: 0 !important;
     scrollbar-width: none !important; /* Hide scrollbar for Firefox */
     border: 1px solid rgba(255, 255, 255, 0.15) !important;
-    border-radius: 50% !important;
+    border-radius: 14px !important; /* Capsule shape */
     padding: 0 !important;
     overflow-y: hidden !important;
   }
@@ -1102,14 +1102,17 @@ input[type="range"]::-webkit-slider-thumb:hover {
   }
 
   .nav button.nav-number {
-    flex: 0 0 28px !important;
-    width: 28px !important;
+    flex: 0 0 48px !important;
+    width: 48px !important;
     height: 28px !important;
     scroll-snap-align: center !important;
     border: none !important;
     background: transparent !important;
     box-shadow: none !important;
-    border-radius: 50% !important;
+    border-radius: 14px !important; /* Capsule shape */
+    font-size: 10px !important;
+    font-weight: 700 !important;
+    letter-spacing: 0.5px !important;
   }
 
   .nav button.nav-number.active {

@@ -210,7 +210,7 @@ function renderNavigation() {
 
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(() => {
-        const buttonWidth = 28; // Mobile button width
+        const buttonWidth = 48; // Mobile capsule width
         const index = Math.round(container.scrollLeft / buttonWidth);
         if (index >= 0 && index < total && index !== curCoupletIndex) {
           isProgrammaticScroll = true;
@@ -224,12 +224,19 @@ function renderNavigation() {
   // Update active state and auto-center scroll position on mobile
   const numbers = container.querySelectorAll('.nav-number');
   numbers.forEach((btn, i) => {
+    const isMobile = window.innerWidth < 1024;
+    
+    // Format text: 01/07 on mobile, 01 on desktop
+    btn.innerText = isMobile
+      ? `${String(i + 1).padStart(2, '0')}/${String(total).padStart(2, '0')}`
+      : String(i + 1).padStart(2, '0');
+
     if (i === curCoupletIndex) {
       btn.classList.add('active');
       
       // Auto scroll active slide into view on mobile
-      if (window.innerWidth < 1024) {
-        const buttonWidth = 28;
+      if (isMobile) {
+        const buttonWidth = 48; // Mobile capsule width
         container.scrollTo({
           left: i * buttonWidth,
           behavior: 'smooth'
@@ -258,33 +265,12 @@ function nextCouplet() {
   selectCouplet(newIndex);
 }
 
-// Enable dynamic mouse wheel scroll & touch swipe navigation on the preview canvas card
+// Enable touch swipe navigation on mobile preview canvas
 function initCanvasNavigation() {
   const viewport = document.querySelector('.view-port');
   if (!viewport) return;
 
-  // 1. Mouse Wheel / Trackpad Scroll Navigation (Throttled)
-  let lastScrollTime = 0;
-  const scrollThrottleMs = 400; // Prevents fast multiple skips
-
-  viewport.addEventListener('wheel', (e) => {
-    // Only intercept scroll if it's a significant vertical or horizontal scroll
-    if (Math.abs(e.deltaY) < 10 && Math.abs(e.deltaX) < 10) return;
-    
-    e.preventDefault(); // Prevent page scroll
-    
-    const now = Date.now();
-    if (now - lastScrollTime < scrollThrottleMs) return;
-    lastScrollTime = now;
-
-    if (e.deltaY > 0 || e.deltaX > 0) {
-      nextCouplet();
-    } else {
-      prevCouplet();
-    }
-  }, { passive: false });
-
-  // 2. Touch Swipe Navigation for Mobile
+  // Touch Swipe Navigation for Mobile
   let touchStartX = 0;
   let touchStartY = 0;
   const swipeThreshold = 40; // minimum pixels swiped to trigger
