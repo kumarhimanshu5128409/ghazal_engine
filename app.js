@@ -1,20 +1,17 @@
 /* ==========================================================================
-   GHAZAL STUDIO - CORE APPLICATION LOGIC (JSON SCHEMA MIGRATED)
+   GHAZAL STUDIO - CORE APPLICATION LOGIC (HIERARCHICAL STATE ENGINE)
    ========================================================================== */
 
 // 1. TABS SYSTEM
 function switchTab(tabId) {
-  // Toggle tab buttons active status
   document.querySelectorAll('.tab-btn').forEach(btn => {
     btn.classList.remove('active');
   });
-  // Find button by onclick matching substring or index
   const btn = Array.from(document.querySelectorAll('.tab-btn')).find(b => 
     b.getAttribute('onclick').includes(tabId)
   );
   if (btn) btn.classList.add('active');
 
-  // Toggle tab content active status
   document.querySelectorAll('.tab-content').forEach(content => {
     content.classList.remove('active');
   });
@@ -87,7 +84,6 @@ function applyPresetTheme(index) {
   const t = colorThemes[index];
   const root = document.documentElement;
 
-  // Apply to card preview variables
   root.style.setProperty('--page-bg', t.pageBg);
   root.style.setProperty('--card-bg', t.cardBg);
   root.style.setProperty('--line-color', t.lines);
@@ -97,7 +93,6 @@ function applyPresetTheme(index) {
   root.style.setProperty('--meaning-color', t.meaning);
   root.style.setProperty('--roman-color', t.roman);
 
-  // Sync custom color pickers
   document.getElementById('cp-card-bg').value = convertToHex(t.cardBg);
   document.getElementById('cp-dev').value = convertToHex(t.dev);
   document.getElementById('cp-roman').value = convertToHex(t.roman);
@@ -217,132 +212,245 @@ function handleLocalImageUpload(event) {
 }
 
 
-// 3. CATALOG & LOCALSTORAGE SYSTEM (MIGRATED TO USER JSON KEYS SCHEMA)
-const DEFAULT_PRESET_SHERS = [
+// 3. MULTI-GHAZAL CATALOG SYSTEM (TWO-LEVEL HIERARCHY STATE MACHINE)
+const DEFAULT_PRESET_GHAZALS = [
   {
-    "line 1": "डरते हैं अपने दिल में दबी, दिल्लगी से हम",
-    "line 2": "करता हो जो ग़ुलाम, ऐसी आशिक़ी से हम",
-    "english line 1": "darte hain apne dil mein dabi, dillagi se hum,",
-    "english line 2": "karta ho jo ghulam, aisi aashiqi se hum.",
-    "meanings": {},
+    "title": "दबी दिल्लगी से हम",
     "tag": "ग़ज़ल",
-    "handle": "@thoughtskumar"
+    "handle": "@thoughtskumar",
+    "couplets": [
+      {
+        "line 1": "डरते हैं अपने दिल में दबी, दिल्लगी से हम",
+        "line 2": "करता हो जो ग़ुलाम, ऐसी आशिक़ी से हम",
+        "english line 1": "darte hain apne dil mein dabi, dillagi se hum,",
+        "english line 2": "karta ho jo ghulam, aisi aashiqi se hum.",
+        "meanings": {}
+      },
+      {
+        "line 1": "एक नौकरी, एक छोकरी, और ज़िंदगी ये व्यस्त",
+        "line 2": "नहीं चाहते, बस ज़िंदगी, इस ज़िंदगी से हम",
+        "english line 1": "ek naukri, ek chhokri, aur zindagi yeh vyast,",
+        "english line 2": "nahi chahte, bas zindagi, iss zindagi se hum.",
+        "meanings": {}
+      },
+      {
+        "line 1": "जिन्हें मंज़िलों की प्यास, काटें शजर-ए-रहगुज़र",
+        "line 2": "हमें प्यार की तलाश, मिलेंगे हर कली से हम",
+        "english line 1": "jinhe manzilon ki pyaas, kaate shajar-e-rehguzar,",
+        "english line 2": "hume pyaar ki talaash, milenge har kali se hum.",
+        "meanings": {
+          "शजर-ए-रहगुज़र": "रास्ते का पेड़"
+        }
+      },
+      {
+        "line 1": "वो सबको जीत लेता है, एक ख़ुद को हारकर",
+        "line 2": "जलते हैं अपने यार की, जादूगरी से हम",
+        "english line 1": "wo sabko jeet leta hai, ek khud ko haarkar,",
+        "english line 2": "jalte hain apne yaar ki, jadoogari se hum.",
+        "meanings": {}
+      },
+      {
+        "line 1": "होश आया तो बाज़ार में थे, वक़्त बेचते",
+        "line 2": "कुछ याद नहीं गुज़रे हैं आख़िर, किस गली से हम",
+        "english line 1": "hosh aaya to baazaar mein the, waqt bechte,",
+        "english line 2": "kuchh yaad nahi guzre hain aakhir, kis gali se hum.",
+        "meanings": {}
+      },
+      {
+        "line 1": "आलम ने है इस दिल को यूं, प्यासा बिठा रखा",
+        "line 2": "अब सुकून सा पाते हैं, इसी तिश्नगी से हम",
+        "english line 1": "aalam ne hai iss dil ko yoon, pyaasa bitha rakha,",
+        "english line 2": "ab sukoon saa paate hain, isi tishnagi se hum.",
+        "meanings": {
+          "तिश्नगी": "प्यास"
+        }
+      },
+      {
+        "line 1": "अब ख़ुद को जलाएंगे हम, करेंगे उजाला",
+        "line 2": "अंजाम तक लड़ेंगे, बसी तीरगी से हम",
+        "english line 1": "ab khud ko jalaayenge hum, karenge ujala,",
+        "english line 2": "anjaam tak ladenge, basi teeragi se hum.",
+        "meanings": {
+          "तीरगी": "अंधेरा"
+        }
+      }
+    ]
   },
   {
-    "line 1": "एक नौकरी, एक छोकरी, और ज़िंदगी ये व्यस्त",
-    "line 2": "नहीं चाहते, बस ज़िंदगी, इस ज़िंदगी से हम",
-    "english line 1": "ek naukri, ek chhokri, aur zindagi yeh vyast,",
-    "english line 2": "nahi chahte, bas zindagi, iss zindagi se hum.",
-    "meanings": {},
-    "tag": "ग़ज़ल",
-    "handle": "@thoughtskumar"
-  },
-  {
-    "line 1": "जिन्हें मंज़िलों की प्यास, काटें शजर-ए-रहगुज़र",
-    "line 2": "हमें प्यार की तलाश, मिलेंगे हर कली से हम",
-    "english line 1": "jinhe manzilon ki pyaas, kaate shajar-e-rehguzar,",
-    "english line 2": "hume pyaar ki talaash, milenge har kali se hum.",
-    "meanings": {
-      "शजर-ए-रहगुज़र": "रास्ते का पेड़"
-    },
-    "tag": "ग़ज़ल",
-    "handle": "@thoughtskumar"
-  },
-  {
-    "line 1": "वो सबको जीत लेता है, एक ख़ुद को हारकर",
-    "line 2": "जलते हैं अपने यार की, जादूगरी से हम",
-    "english line 1": "wo sabko jeet leta hai, ek khud ko haarkar,",
-    "english line 2": "jalte hain apne yaar ki, jadoogari se hum.",
-    "meanings": {},
-    "tag": "ग़ज़ल",
-    "handle": "@thoughtskumar"
-  },
-  {
-    "line 1": "होश आया तो बाज़ार में थे, वक़्त बेचते",
-    "line 2": "कुछ याद नहीं गुज़रे हैं आख़िर, किस गली से हम",
-    "english line 1": "hosh aaya to baazaar mein the, waqt bechte,",
-    "english line 2": "kuchh yaad nahi guzre hain aakhir, kis gali se hum.",
-    "meanings": {},
-    "tag": "ग़ज़ल",
-    "handle": "@thoughtskumar"
-  },
-  {
-    "line 1": "आलम ने है इस दिल को यूं, प्यासा बिठा रखा",
-    "line 2": "अब सुकून सा पाते हैं, इसी तिश्नगी से हम",
-    "english line 1": "aalam ne hai iss dil ko yoon, pyaasa bitha rakha,",
-    "english line 2": "ab sukoon saa paate hain, isi tishnagi se hum.",
-    "meanings": {
-      "तिश्नगी": "प्यास"
-    },
-    "tag": "ग़ज़ल",
-    "handle": "@thoughtskumar"
-  },
-  {
-    "line 1": "अब ख़ुद को जलाएंगे हम, करेंगे उजाला",
-    "line 2": "अंजाम तक लड़ेंगे, बसी तीरगी से हम",
-    "english line 1": "ab khud ko jalaayenge hum, karenge ujala,",
-    "english line 2": "anjaam tak ladenge, basi teeragi se hum.",
-    "meanings": {
-      "तीरगी": "अंधेरा"
-    },
-    "tag": "ग़ज़ल",
-    "handle": "@thoughtskumar"
+    "title": "इश्क़ का कारवाँ",
+    "tag": "नज़्म",
+    "handle": "@thoughtskumar",
+    "couplets": [
+      {
+        "line 1": "सफ़र में हमसफ़र मिले तो कारवाँ बना",
+        "line 2": "तुम्हारी याद का ही दिल में आसमाँ बना",
+        "english line 1": "safar mein humsafar mile toh karwan bana,",
+        "english line 2": "tumhari yaad ka hi dil mein aasman bana.",
+        "meanings": {
+          "कारवाँ": "यात्रियों का समूह"
+        }
+      },
+      {
+        "line 1": "हज़ार मुश्किलें हों पर ये हौसला रहे",
+        "line 2": "चराग़ बनकर जलने का सिलसिला रहे",
+        "english line 1": "hazaar mushkilein hon par yeh hausla rahe,",
+        "english line 2": "chiraag bankar jalne ka silsila rahe.",
+        "meanings": {
+          "सिलसिला": "क्रम/दौर"
+        }
+      },
+      {
+        "line 1": "ख़ामोशियाँ भी कहती हैं अब दास्ताँ मेरी",
+        "line 2": "ज़मीं तुम्हारी हो गयी है, आसमाँ मेरा",
+        "english line 1": "khamoshiyan bhi kehti hain ab dastan meri,",
+        "english line 2": "zamin tumhari ho gayi hai, aasman mera.",
+        "meanings": {
+          "दास्ताँ": "कहानी"
+        }
+      }
+    ]
   }
 ];
 
-let shers = [];
-let curIndex = 0;
+let ghazals = [];
+let curGhazalIndex = 0;
+let curCoupletIndex = 0;
 
-// Dynamic load: Pulls ghazals.json from repo, fallback to LocalStorage, fallback to Defaults
+// Dynamic fetch loading of ghazals.json, with LocalStorage + Presets fallback
 async function loadCatalogFromStorage() {
-  // First, check if we can fetch './ghazals.json' natively
   try {
     const response = await fetch('./ghazals.json');
     if (response.ok) {
-      const fetchedShers = await response.json();
-      if (Array.isArray(fetchedShers) && fetchedShers.length > 0 && fetchedShers[0]['line 1']) {
-        shers = fetchedShers;
+      const fetched = await response.json();
+      if (Array.isArray(fetched) && fetched.length > 0 && fetched[0].couplets) {
+        ghazals = fetched;
         saveCatalogToStorage();
-        selectSher(0);
-        console.log("Loaded ghazals directly from ghazals.json in repository");
+        renderGhazalSelectorUI();
+        switchGhazalProject(0);
+        console.log("Loaded ghazals hierarchy directly from ghazals.json in repository");
         return;
       }
     }
   } catch (err) {
-    console.warn("Failed to fetch ghazals.json (expected during local direct filesystem load or if file missing). Falling back to LocalStorage.");
+    console.warn("Failed to fetch ghazals.json. Falling back to LocalStorage.");
   }
 
-  // Fallback to LocalStorage
-  const data = localStorage.getItem('ghazal_studio_shers');
+  const data = localStorage.getItem('ghazal_studio_hierarchical_catalog');
   if (data) {
     try {
-      shers = JSON.parse(data);
-      // Verify schema keys
-      if (!shers[0]['line 1']) throw new Error("Old schema detected");
+      ghazals = JSON.parse(data);
+      if (!Array.isArray(ghazals) || ghazals.length === 0 || !ghazals[0].couplets) {
+        throw new Error("Invalid schema");
+      }
     } catch(e) {
-      shers = JSON.parse(JSON.stringify(DEFAULT_PRESET_SHERS));
+      ghazals = JSON.parse(JSON.stringify(DEFAULT_PRESET_GHAZALS));
     }
   } else {
-    shers = JSON.parse(JSON.stringify(DEFAULT_PRESET_SHERS));
+    ghazals = JSON.parse(JSON.stringify(DEFAULT_PRESET_GHAZALS));
     saveCatalogToStorage();
   }
-  selectSher(0);
+  
+  renderGhazalSelectorUI();
+  switchGhazalProject(0);
 }
 
 function saveCatalogToStorage() {
-  localStorage.setItem('ghazal_studio_shers', JSON.stringify(shers));
+  localStorage.setItem('ghazal_studio_hierarchical_catalog', JSON.stringify(ghazals));
 }
 
+// Ghazal Selector Dropdown UI Handler
+function renderGhazalSelectorUI() {
+  const select = document.getElementById('select-ghazal-project');
+  select.innerHTML = '';
+
+  ghazals.forEach((g, i) => {
+    const opt = document.createElement('option');
+    opt.value = i;
+    opt.innerText = `${g.title || `Ghazal ${i+1}`} (${g.couplets ? g.couplets.length : 0} couplets)`;
+    select.appendChild(opt);
+  });
+
+  select.value = curGhazalIndex;
+}
+
+function switchGhazalProject(index) {
+  if (index < 0 || index >= ghazals.length) return;
+  curGhazalIndex = index;
+  curCoupletIndex = 0;
+  
+  document.getElementById('select-ghazal-project').value = index;
+  selectCouplet(0);
+}
+
+function createNewGhazalProject() {
+  const title = prompt("Enter a title for the new Ghazal project:", `Ghazal ${ghazals.length + 1}`);
+  if (!title) return;
+
+  const newGhazal = {
+    "title": title,
+    "tag": "ग़ज़ल",
+    "handle": ghazals[curGhazalIndex] ? ghazals[curGhazalIndex].handle : "@thoughtskumar",
+    "couplets": [
+      {
+        "line 1": "यहाँ अपनी नयी पहली पंक्ति लिखें...",
+        "line 2": "और यहाँ अपनी दूसरी पंक्ति...",
+        "english line 1": "Type English transcription line 1...",
+        "english line 2": "And English line 2...",
+        "meanings": {}
+      }
+    ]
+  };
+
+  ghazals.push(newGhazal);
+  saveCatalogToStorage();
+  renderGhazalSelectorUI();
+  switchGhazalProject(ghazals.length - 1);
+}
+
+function renameCurrentGhazal() {
+  const g = ghazals[curGhazalIndex];
+  const newTitle = prompt("Rename Ghazal project:", g.title);
+  if (!newTitle) return;
+
+  g.title = newTitle;
+  saveCatalogToStorage();
+  renderGhazalSelectorUI();
+}
+
+function deleteCurrentGhazalProject() {
+  if (ghazals.length <= 1) {
+    alert("You must keep at least one Ghazal project in your studio.");
+    return;
+  }
+  if (!confirm(`Are you sure you want to delete the active Ghazal "${ghazals[curGhazalIndex].title}"? This cannot be undone.`)) {
+    return;
+  }
+
+  ghazals.splice(curGhazalIndex, 1);
+  if (curGhazalIndex >= ghazals.length) {
+    curGhazalIndex = ghazals.length - 1;
+  }
+
+  saveCatalogToStorage();
+  renderGhazalSelectorUI();
+  switchGhazalProject(curGhazalIndex);
+}
+
+
+// Couplet Management within active Ghazal
 function renderSavedListUI() {
   const container = document.getElementById('saved-shers-list');
   container.innerHTML = '';
 
-  shers.forEach((sher, i) => {
+  const activeGhazal = ghazals[curGhazalIndex];
+  const couplets = activeGhazal.couplets || [];
+
+  couplets.forEach((sher, i) => {
     const item = document.createElement('div');
-    item.className = i === curIndex ? 'sher-item active' : 'sher-item';
+    item.className = i === curCoupletIndex ? 'sher-item active' : 'sher-item';
     item.onclick = (e) => {
       if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
-      selectSher(i);
+      selectCouplet(i);
     };
 
     const linePreview = `${sher['line 1'] || ''} / ${sher['line 2'] || ''}`;
@@ -351,9 +459,9 @@ function renderSavedListUI() {
       <div class="sher-item-header">
         <span class="sher-item-num">Couplet ${String(i+1).padStart(2, '0')}</span>
         <div class="sher-item-actions">
-          <button class="sher-action-btn" title="Move Up" onclick="moveSher(${i}, -1)">▲</button>
-          <button class="sher-action-btn" title="Move Down" onclick="moveSher(${i}, 1)">▼</button>
-          <button class="sher-action-btn" title="Delete" onclick="deleteSher(${i})">🗑️</button>
+          <button class="sher-action-btn" title="Move Up" onclick="moveCouplet(${i}, -1)">▲</button>
+          <button class="sher-action-btn" title="Move Down" onclick="moveCouplet(${i}, 1)">▼</button>
+          <button class="sher-action-btn" title="Delete" onclick="deleteCouplet(${i})">🗑️</button>
         </div>
       </div>
       <div class="sher-item-preview">${linePreview}</div>
@@ -369,29 +477,33 @@ function renderPillDots() {
   const dotsContainer = document.getElementById('nav-dots');
   dotsContainer.innerHTML = '';
 
-  shers.forEach((_, i) => {
+  const activeGhazal = ghazals[curGhazalIndex];
+  const couplets = activeGhazal.couplets || [];
+
+  couplets.forEach((_, i) => {
     const btn = document.createElement('button');
-    btn.className = i === curIndex ? 'active' : '';
+    btn.className = i === curCoupletIndex ? 'active' : '';
     btn.innerText = i + 1;
-    btn.onclick = () => selectSher(i);
+    btn.onclick = () => selectCouplet(i);
     dotsContainer.appendChild(btn);
   });
 
-  document.getElementById('dl-all-btn').innerText = `↓ Save All ${shers.length}`;
+  document.getElementById('dl-all-btn').innerText = `↓ Save All ${couplets.length}`;
 }
 
-function selectSher(index) {
-  curIndex = index;
-  const sher = shers[index];
+function selectCouplet(index) {
+  curCoupletIndex = index;
+  const activeGhazal = ghazals[curGhazalIndex];
+  const couplet = activeGhazal.couplets[index];
 
-  // Sync separated inputs matching user JSON keys
-  document.getElementById('input-line1').value = sher['line 1'] || '';
-  document.getElementById('input-line2').value = sher['line 2'] || '';
-  document.getElementById('input-eng1').value = sher['english line 1'] || '';
-  document.getElementById('input-eng2').value = sher['english line 2'] || '';
+  // Sync inputs
+  document.getElementById('input-line1').value = couplet['line 1'] || '';
+  document.getElementById('input-line2').value = couplet['line 2'] || '';
+  document.getElementById('input-eng1').value = couplet['english line 1'] || '';
+  document.getElementById('input-eng2').value = couplet['english line 2'] || '';
   
-  document.getElementById('input-tag').value = sher.tag || 'ग़ज़ल';
-  document.getElementById('input-handle').value = sher.handle || '@thoughtskumar';
+  document.getElementById('input-tag').value = activeGhazal.tag || 'ग़ज़ल';
+  document.getElementById('input-handle').value = activeGhazal.handle || '@thoughtskumar';
 
   renderAnnotationsUI();
   renderCardCanvas();
@@ -399,61 +511,65 @@ function selectSher(index) {
 }
 
 function createNewSher() {
+  const activeGhazal = ghazals[curGhazalIndex];
   const newSher = {
     "line 1": "यहाँ अपनी नयी पहली पंक्ति लिखें...",
     "line 2": "और यहाँ अपनी दूसरी पंक्ति...",
     "english line 1": "Type English line 1 transcription here...",
     "english line 2": "And English line 2 transcription here...",
-    "meanings": {},
-    "tag": "ग़ज़ल",
-    "handle": shers[curIndex] ? shers[curIndex].handle : "@thoughtskumar"
+    "meanings": {}
   };
 
-  shers.push(newSher);
+  activeGhazal.couplets.push(newSher);
   saveCatalogToStorage();
-  selectSher(shers.length - 1);
+  renderGhazalSelectorUI(); // Update count in selector
+  selectCouplet(activeGhazal.couplets.length - 1);
 }
 
-function deleteSher(index) {
-  if (shers.length <= 1) {
-    alert("You must keep at least one couplet in your catalog.");
+function deleteCouplet(index) {
+  const activeGhazal = ghazals[curGhazalIndex];
+  if (activeGhazal.couplets.length <= 1) {
+    alert("You must keep at least one couplet in your Ghazal catalog.");
     return;
   }
-  shers.splice(index, 1);
+  activeGhazal.couplets.splice(index, 1);
   saveCatalogToStorage();
+  renderGhazalSelectorUI(); // Update count in selector
   
-  if (curIndex >= shers.length) {
-    curIndex = shers.length - 1;
+  if (curCoupletIndex >= activeGhazal.couplets.length) {
+    curCoupletIndex = activeGhazal.couplets.length - 1;
   }
-  selectSher(curIndex);
+  selectCouplet(curCoupletIndex);
 }
 
-function moveSher(index, direction) {
+function moveCouplet(index, direction) {
+  const activeGhazal = ghazals[curGhazalIndex];
   const targetIndex = index + direction;
-  if (targetIndex < 0 || targetIndex >= shers.length) return;
+  if (targetIndex < 0 || targetIndex >= activeGhazal.couplets.length) return;
 
-  const temp = shers[index];
-  shers[index] = shers[targetIndex];
-  shers[targetIndex] = temp;
+  const temp = activeGhazal.couplets[index];
+  activeGhazal.couplets[index] = activeGhazal.couplets[targetIndex];
+  activeGhazal.couplets[targetIndex] = temp;
 
   saveCatalogToStorage();
 
-  if (curIndex === index) curIndex = targetIndex;
-  else if (curIndex === targetIndex) curIndex = index;
+  if (curCoupletIndex === index) curCoupletIndex = targetIndex;
+  else if (curCoupletIndex === targetIndex) curCoupletIndex = index;
 
-  selectSher(curIndex);
+  selectCouplet(curCoupletIndex);
 }
 
 function resetToPresets() {
-  if (confirm("This will reset your catalog and replace it with default couplets. Continue?")) {
-    shers = JSON.parse(JSON.stringify(DEFAULT_PRESET_SHERS));
+  if (confirm("This will reset all your Ghazal projects back to original presets. Continue?")) {
+    ghazals = JSON.parse(JSON.stringify(DEFAULT_PRESET_GHAZALS));
     saveCatalogToStorage();
-    selectSher(0);
+    renderGhazalSelectorUI();
+    switchGhazalProject(0);
   }
 }
 
 function exportCatalog() {
-  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(shers, null, 2));
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(ghazals, null, 2));
   const downloadAnchor = document.createElement('a');
   downloadAnchor.setAttribute("href", dataStr);
   downloadAnchor.setAttribute("download", "ghazals.json");
@@ -470,13 +586,14 @@ function importCatalog(event) {
   reader.onload = function(e) {
     try {
       const parsed = JSON.parse(e.target.result);
-      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]['line 1']) {
-        shers = parsed;
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].couplets) {
+        ghazals = parsed;
         saveCatalogToStorage();
-        selectSher(0);
-        alert("Poetry catalog imported successfully!");
+        renderGhazalSelectorUI();
+        switchGhazalProject(0);
+        alert("Hierarchical poetry catalog imported successfully!");
       } else {
-        alert("Invalid file format. Make sure it is a valid list of couplets with 'line 1' keys.");
+        alert("Invalid file format. Make sure it contains 'couplets' sub-arrays.");
       }
     } catch (err) {
       alert("Error parsing JSON file.");
@@ -486,37 +603,37 @@ function importCatalog(event) {
 }
 
 
-// 4. TEXT RENDERING & ANNOTATIONS SYSTEM (MIGRATED TO USER SCHEMA)
+// 4. TEXT RENDERING & ANNOTATIONS SYSTEM (MIGRATED TO TWO-LEVEL HIERARCHY)
 function updateCurrentSherText() {
-  const activeSher = shers[curIndex];
-  activeSher['line 1'] = document.getElementById('input-line1').value;
-  activeSher['line 2'] = document.getElementById('input-line2').value;
-  activeSher['english line 1'] = document.getElementById('input-eng1').value;
-  activeSher['english line 2'] = document.getElementById('input-eng2').value;
+  const activeGhazal = ghazals[curGhazalIndex];
+  const activeCouplet = activeGhazal.couplets[curCoupletIndex];
+
+  activeCouplet['line 1'] = document.getElementById('input-line1').value;
+  activeCouplet['line 2'] = document.getElementById('input-line2').value;
+  activeCouplet['english line 1'] = document.getElementById('input-eng1').value;
+  activeCouplet['english line 2'] = document.getElementById('input-eng2').value;
   
   saveCatalogToStorage();
   renderCardCanvas();
 }
 
 function updateSignatures() {
-  const activeSher = shers[curIndex];
-  activeSher.tag = document.getElementById('input-tag').value;
-  activeSher.handle = document.getElementById('input-handle').value;
+  const activeGhazal = ghazals[curGhazalIndex];
+  activeGhazal.tag = document.getElementById('input-tag').value;
+  activeGhazal.handle = document.getElementById('input-handle').value;
 
   saveCatalogToStorage();
   renderCardCanvas();
 }
 
-// Replace annotation keywords in rendering
 function renderCardCanvas() {
-  const sher = shers[curIndex];
+  const activeGhazal = ghazals[curGhazalIndex];
+  const couplet = activeGhazal.couplets[curCoupletIndex];
 
-  // Combine lines using line break
-  let devHtml = (sher['line 1'] || '') + '\n' + (sher['line 2'] || '');
-  let romHtml = (sher['english line 1'] || '') + '\n' + (sher['english line 2'] || '');
+  let devHtml = (couplet['line 1'] || '') + '\n' + (couplet['line 2'] || '');
+  let romHtml = (couplet['english line 1'] || '') + '\n' + (couplet['english line 2'] || '');
 
-  // Sort meanings dictionary keys by length descending to replace accurately
-  const meaningsMap = sher.meanings || {};
+  const meaningsMap = couplet.meanings || {};
   const sortedWords = Object.keys(meaningsMap).sort((a,b) => b.length - a.length);
 
   sortedWords.forEach(word => {
@@ -524,32 +641,29 @@ function renderCardCanvas() {
     if (word && meaning) {
       const escapedWord = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
       const regex = new RegExp(escapedWord, 'g');
-      
-      // We automatically display meanings on top alignment (standard)
       const annotationHtml = `<span class="annotated">${word}<span class="meaning top">${meaning}</span></span>`;
       devHtml = devHtml.replace(regex, annotationHtml);
     }
   });
 
-  // Display Devnagari & Roman text
   document.getElementById('card-dev-display').innerHTML = devHtml.replace(/\n/g, '<br>');
   document.getElementById('card-rom-display').innerHTML = romHtml.replace(/\n/g, '<br>');
 
-  // Display Metadata Handle & Tag
-  document.getElementById('card-tag').innerText = sher.tag || 'ग़ज़ल';
-  document.getElementById('card-handle').innerText = sher.handle || '@thoughtskumar';
+  document.getElementById('card-tag').innerText = activeGhazal.tag || 'ग़ज़ल';
+  document.getElementById('card-handle').innerText = activeGhazal.handle || '@thoughtskumar';
 
-  // Display counter
-  document.getElementById('card-number-display').innerText = `${String(curIndex + 1).padStart(2, '0')} / ${String(shers.length).padStart(2, '0')}`;
+  const totalCoupletsCount = activeGhazal.couplets.length;
+  document.getElementById('card-number-display').innerText = `${String(curCoupletIndex + 1).padStart(2, '0')} / ${String(totalCoupletsCount).padStart(2, '0')}`;
 }
 
-// Render list of annotations in Editor Tab
 function renderAnnotationsUI() {
   const listUI = document.getElementById('annotations-list-ui');
   listUI.innerHTML = '';
-  const activeSher = shers[curIndex];
+  
+  const activeGhazal = ghazals[curGhazalIndex];
+  const couplet = activeGhazal.couplets[curCoupletIndex];
 
-  const meaningsMap = activeSher.meanings || {};
+  const meaningsMap = couplet.meanings || {};
   const words = Object.keys(meaningsMap);
 
   if (words.length === 0) {
@@ -573,11 +687,9 @@ function renderAnnotationsUI() {
   });
 }
 
-// Annotation Modal Functions
 function openAnnotationModal() {
   document.getElementById('modal-word-input').value = '';
   document.getElementById('modal-meaning-input').value = '';
-  // Position selector is kept in modal but meanings always map on top/hover alignment natively
   document.getElementById('annotation-modal').classList.add('active');
 }
 
@@ -594,10 +706,11 @@ function saveAnnotationFromModal() {
     return;
   }
 
-  const activeSher = shers[curIndex];
-  if (!activeSher.meanings) activeSher.meanings = {};
+  const activeGhazal = ghazals[curGhazalIndex];
+  const couplet = activeGhazal.couplets[curCoupletIndex];
+  if (!couplet.meanings) couplet.meanings = {};
 
-  activeSher.meanings[word] = meaning;
+  couplet.meanings[word] = meaning;
   saveCatalogToStorage();
   renderCardCanvas();
   renderAnnotationsUI();
@@ -605,9 +718,10 @@ function saveAnnotationFromModal() {
 }
 
 function deleteAnnotation(word) {
-  const activeSher = shers[curIndex];
-  if (activeSher.meanings && activeSher.meanings[word]) {
-    delete activeSher.meanings[word];
+  const activeGhazal = ghazals[curGhazalIndex];
+  const couplet = activeGhazal.couplets[curCoupletIndex];
+  if (couplet.meanings && couplet.meanings[word]) {
+    delete couplet.meanings[word];
   }
   saveCatalogToStorage();
   renderCardCanvas();
@@ -666,25 +780,27 @@ function captureAndDownload(filename) {
 }
 
 function downloadSingleImage() {
-  captureAndDownload(`sher-${curIndex + 1}.png`);
+  captureAndDownload(`sher-${curCoupletIndex + 1}.png`);
 }
 
 async function downloadAllImages() {
   const btn = document.getElementById('dl-all-btn');
   btn.disabled = true;
-  const originalCur = curIndex; 
+  const originalCur = curCoupletIndex; 
+  const activeGhazal = ghazals[curGhazalIndex];
+  const total = activeGhazal.couplets.length;
 
-  for (let i = 0; i < shers.length; i++) {
-    btn.innerText = `... (${i + 1}/${shers.length})`;
-    selectSher(i);
+  for (let i = 0; i < total; i++) {
+    btn.innerText = `... (${i + 1}/${total})`;
+    selectCouplet(i);
     
     await new Promise(r => setTimeout(r, 200)); 
     await captureAndDownload(`sher-${i + 1}.png`);
     await new Promise(r => setTimeout(r, 400)); 
   }
 
-  selectSher(originalCur); 
-  btn.innerText = `↓ Save All ${shers.length}`;
+  selectCouplet(originalCur); 
+  btn.innerText = `↓ Save All ${total}`;
   btn.disabled = false;
 }
 

@@ -20,6 +20,22 @@
       <div class="sidebar-subtitle">Interactive Poetry Engine</div>
     </div>
 
+    <!-- Ghazal Selector Dropdown Section -->
+    <div class="form-group" style="margin-bottom: 20px; background: rgba(255, 255, 255, 0.02); padding: 12px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.05);">
+      <label class="form-label" for="select-ghazal-project" style="color: #a5b4fc; font-weight: 700; display: flex; justify-content: space-between; align-items: center;">
+        <span>Select Ghazal</span>
+        <span style="font-size: 9px; background: rgba(165, 180, 252, 0.1); padding: 2px 6px; border-radius: 4px;">Collection</span>
+      </label>
+      <select id="select-ghazal-project" class="form-select" style="margin-top: 6px;" onchange="switchGhazalProject(parseInt(this.value))">
+        <!-- Dynamic options -->
+      </select>
+      <div style="display: flex; gap: 6px; margin-top: 8px;">
+        <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px;" onclick="renameCurrentGhazal()" title="Rename active Ghazal">Rename</button>
+        <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px;" onclick="createNewGhazalProject()" title="Create new blank Ghazal">+ New</button>
+        <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px; color: #f87171;" onclick="deleteCurrentGhazalProject()" title="Delete active Ghazal">Delete</button>
+      </div>
+    </div>
+
     <!-- Tabs Navigation -->
     <div class="tabs-nav">
       <button class="tab-btn active" onclick="switchTab('editor')">Editor</button>
