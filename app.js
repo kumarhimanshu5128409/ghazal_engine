@@ -1,5 +1,5 @@
 /* ==========================================================================
-   GHAZAL STUDIO - CORE APPLICATION LOGIC
+   GHAZAL STUDIO - CORE APPLICATION LOGIC (JSON SCHEMA MIGRATED)
    ========================================================================== */
 
 // 1. TABS SYSTEM
@@ -79,7 +79,6 @@ let customStylingMode = false;
 
 function applyPresetTheme(index) {
   if (customStylingMode) {
-    // Disable custom mode if clicking preset
     document.getElementById('toggle-custom-styling').checked = false;
     toggleCustomStylingMode();
   }
@@ -98,7 +97,7 @@ function applyPresetTheme(index) {
   root.style.setProperty('--meaning-color', t.meaning);
   root.style.setProperty('--roman-color', t.roman);
 
-  // Sync custom color pickers to match theme for easy tweaking
+  // Sync custom color pickers
   document.getElementById('cp-card-bg').value = convertToHex(t.cardBg);
   document.getElementById('cp-dev').value = convertToHex(t.dev);
   document.getElementById('cp-roman').value = convertToHex(t.roman);
@@ -106,27 +105,22 @@ function applyPresetTheme(index) {
   document.getElementById('cp-lines').value = convertToHex(t.lines);
   document.getElementById('cp-handle').value = convertToHex(t.handle);
 
-  // Reset gradient and background images variables on preset select
   const card = document.getElementById('post-card');
   card.style.backgroundImage = 'none';
   document.getElementById('card-bg-blur-overlay').style.backdropFilter = 'none';
 
-  // Toggle active button status
   document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
   const activeBtn = document.getElementById(`theme-btn-${index}`);
   if (activeBtn) activeBtn.classList.add('active');
 }
 
-// Convert common hex colors or rgb, default to white/black
 function convertToHex(colorStr) {
   if (colorStr.startsWith('#')) return colorStr;
-  // Fallback for simple names
   if (colorStr === 'white') return '#ffffff';
   if (colorStr === 'black') return '#000000';
   return '#ffffff';
 }
 
-// Custom Styling Toggle Action
 function toggleCustomStylingMode() {
   const checked = document.getElementById('toggle-custom-styling').checked;
   customStylingMode = checked;
@@ -135,7 +129,6 @@ function toggleCustomStylingMode() {
   if (checked) {
     panel.style.opacity = '1';
     panel.style.pointerEvents = 'auto';
-    // Remove theme button active class
     document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
     applyCustomColors();
   } else {
@@ -145,7 +138,6 @@ function toggleCustomStylingMode() {
   }
 }
 
-// Apply Custom Color & Gradients & Background Images
 function applyCustomColors() {
   if (!customStylingMode) return;
 
@@ -154,7 +146,6 @@ function applyCustomColors() {
   const bgStyle = document.getElementById('select-bg-style').value;
   const bgImgUrl = document.getElementById('input-bg-image').value.trim();
 
-  // Basic colors
   const cardBg = document.getElementById('cp-card-bg').value;
   const devColor = document.getElementById('cp-dev').value;
   const romColor = document.getElementById('cp-roman').value;
@@ -170,11 +161,9 @@ function applyCustomColors() {
   root.style.setProperty('--tag-color', handleColor);
   root.style.setProperty('--handle-color', handleColor);
 
-  // Borders Visibility
   const showBorders = document.getElementById('toggle-lines-visible').checked;
   root.style.setProperty('--card-line-opacity', showBorders ? '1' : '0');
 
-  // Background Style options (Solid, Gradient)
   const gradPickers = document.getElementById('gradient-pickers');
   if (bgStyle.startsWith('gradient')) {
     gradPickers.style.display = 'grid';
@@ -191,7 +180,6 @@ function applyCustomColors() {
     card.style.backgroundImage = 'none';
   }
 
-  // Handle Background Image uploader & opacity & blur
   const imgOpacity = document.getElementById('range-bg-opacity').value;
   const imgBlur = document.getElementById('range-bg-blur').value;
   const paddingVal = document.getElementById('range-card-padding').value;
@@ -200,14 +188,12 @@ function applyCustomColors() {
   document.getElementById('label-bg-blur').innerText = `${imgBlur}px`;
   document.getElementById('label-card-padding').innerText = `${paddingVal}px`;
 
-  // Apply layout card padding
   root.style.setProperty('--card-padding', `${paddingVal}px`);
 
   const blurOverlay = document.getElementById('card-bg-blur-overlay');
   
   if (bgImgUrl) {
     card.style.backgroundImage = `url(${bgImgUrl})`;
-    // Adjust overlay cover colors
     blurOverlay.style.background = `rgba(var(--card-bg), ${(100 - imgOpacity) / 100})`;
     blurOverlay.style.backdropFilter = `blur(${imgBlur}px)`;
     blurOverlay.style.webkitBackdropFilter = `blur(${imgBlur}px)`;
@@ -218,7 +204,6 @@ function applyCustomColors() {
   }
 }
 
-// Local image file upload
 function handleLocalImageUpload(event) {
   const file = event.target.files[0];
   if (!file) return;
@@ -232,73 +217,108 @@ function handleLocalImageUpload(event) {
 }
 
 
-// 3. CATALOG & LOCALSTORAGE SYSTEM
+// 3. CATALOG & LOCALSTORAGE SYSTEM (MIGRATED TO USER JSON KEYS SCHEMA)
 const DEFAULT_PRESET_SHERS = [
   {
-    d: "डरते हैं अपने दिल में दबी, दिल्लगी से हम\nकरता हो जो ग़ुलाम, ऐसी आशिक़ी से हम",
-    r: "darte hain apne dil mein dabi, dillagi se hum,\nkarta ho jo ghulam, aisi aashiqi se hum.",
-    tag: "ग़ज़ल",
-    handle: "@thoughtskumar",
-    annotations: []
+    "line 1": "डरते हैं अपने दिल में दबी, दिल्लगी से हम",
+    "line 2": "करता हो जो ग़ुलाम, ऐसी आशिक़ी से हम",
+    "english line 1": "darte hain apne dil mein dabi, dillagi se hum,",
+    "english line 2": "karta ho jo ghulam, aisi aashiqi se hum.",
+    "meanings": {},
+    "tag": "ग़ज़ल",
+    "handle": "@thoughtskumar"
   },
   {
-    d: "एक नौकरी, एक छोकरी, और ज़िंदगी ये व्यस्त\nनहीं चाहते, बस ज़िंदगी, इस ज़िंदगी से हम",
-    r: "ek naukri, ek chhokri, aur zindagi yeh vyast,\nnahi chahte, bas zindagi, iss zindagi se hum.",
-    tag: "ग़ज़ल",
-    handle: "@thoughtskumar",
-    annotations: []
+    "line 1": "एक नौकरी, एक छोकरी, और ज़िंदगी ये व्यस्त",
+    "line 2": "नहीं चाहते, बस ज़िंदगी, इस ज़िंदगी से हम",
+    "english line 1": "ek naukri, ek chhokri, aur zindagi yeh vyast,",
+    "english line 2": "nahi chahte, bas zindagi, iss zindagi se hum.",
+    "meanings": {},
+    "tag": "ग़ज़ल",
+    "handle": "@thoughtskumar"
   },
   {
-    d: "जिन्हें मंज़िलों की प्यास, काटें शजर-ए-रहगुज़र\nहमें प्यार की तलाश, मिलेंगे हर कली से हम",
-    r: "jinhe manzilon ki pyaas, kaate shajar-e-rehguzar,\nhume pyaar ki talaash, milenge har kali se hum.",
-    tag: "ग़ज़ल",
-    handle: "@thoughtskumar",
-    annotations: [
-      { word: "शजर-ए-रहगुज़र", meaning: "रास्ते का पेड़", pos: "top" }
-    ]
+    "line 1": "जिन्हें मंज़िलों की प्यास, काटें शजर-ए-रहगुज़र",
+    "line 2": "हमें प्यार की तलाश, मिलेंगे हर कली से हम",
+    "english line 1": "jinhe manzilon ki pyaas, kaate shajar-e-rehguzar,",
+    "english line 2": "hume pyaar ki talaash, milenge har kali se hum.",
+    "meanings": {
+      "शजर-ए-रहगुज़र": "रास्ते का पेड़"
+    },
+    "tag": "ग़ज़ल",
+    "handle": "@thoughtskumar"
   },
   {
-    d: "वो सबको जीत लेता है, एक ख़ुद को हारकर\nजलते हैं अपने यार की, जादूगरी से हम",
-    r: "wo sabko jeet leta hai, ek khud ko haarkar,\njalte hain apne yaar ki, jadoogari se hum.",
-    tag: "ग़ज़ल",
-    handle: "@thoughtskumar",
-    annotations: []
+    "line 1": "वो सबको जीत लेता है, एक ख़ुद को हारकर",
+    "line 2": "जलते हैं अपने यार की, जादूगरी से हम",
+    "english line 1": "wo sabko jeet leta hai, ek khud ko haarkar,",
+    "english line 2": "jalte hain apne yaar ki, jadoogari se hum.",
+    "meanings": {},
+    "tag": "ग़ज़ल",
+    "handle": "@thoughtskumar"
   },
   {
-    d: "होश आया तो बाज़ार में थे, वक़्त बेचते\nकुछ याद नहीं गुज़रे हैं आख़िर, किस गली से हम",
-    r: "hosh aaya to baazaar mein the, waqt bechte,\nkuchh yaad nahi guzre hain aakhir, kis gali se hum.",
-    tag: "ग़ज़ल",
-    handle: "@thoughtskumar",
-    annotations: []
+    "line 1": "होश आया तो बाज़ार में थे, वक़्त बेचते",
+    "line 2": "कुछ याद नहीं गुज़रे हैं आख़िर, किस गली से हम",
+    "english line 1": "hosh aaya to baazaar mein the, waqt bechte,",
+    "english line 2": "kuchh yaad nahi guzre hain aakhir, kis gali se hum.",
+    "meanings": {},
+    "tag": "ग़ज़ल",
+    "handle": "@thoughtskumar"
   },
   {
-    d: "आलम ने है इस दिल को यूं, प्यासा बिठा रखा\nअब सुकून सा पाते हैं, इसी तिश्नगी से हम",
-    r: "aalam ne hai iss dil ko yoon, pyaasa bitha rakha,\nab sukoon saa paate hain, isi tishnagi se hum.",
-    tag: "ग़ज़ल",
-    handle: "@thoughtskumar",
-    annotations: [
-      { word: "तिश्नगी", meaning: "प्यास", pos: "bottom" }
-    ]
+    "line 1": "आलम ने है इस दिल को यूं, प्यासा बिठा रखा",
+    "line 2": "अब सुकून सा पाते हैं, इसी तिश्नगी से हम",
+    "english line 1": "aalam ne hai iss dil ko yoon, pyaasa bitha rakha,",
+    "english line 2": "ab sukoon saa paate hain, isi tishnagi se hum.",
+    "meanings": {
+      "तिश्नगी": "प्यास"
+    },
+    "tag": "ग़ज़ल",
+    "handle": "@thoughtskumar"
   },
   {
-    d: "अब ख़ुद को जलाएंगे हम, करेंगे उजाला\nअंजाम तक लड़ेंगे, बसी तीरगी से हम",
-    r: "ab khud ko jalaayenge hum, karenge ujala,\nanjaam tak ladenge, basi teeragi se hum.",
-    tag: "ग़ज़ल",
-    handle: "@thoughtskumar",
-    annotations: [
-      { word: "तीरगी", meaning: "अंधेरा", pos: "bottom" }
-    ]
+    "line 1": "अब ख़ुद को जलाएंगे हम, करेंगे उजाला",
+    "line 2": "अंजाम तक लड़ेंगे, बसी तीरगी से हम",
+    "english line 1": "ab khud ko jalaayenge hum, karenge ujala,",
+    "english line 2": "anjaam tak ladenge, basi teeragi se hum.",
+    "meanings": {
+      "तीरगी": "अंधेरा"
+    },
+    "tag": "ग़ज़ल",
+    "handle": "@thoughtskumar"
   }
 ];
 
 let shers = [];
 let curIndex = 0;
 
-function loadCatalogFromStorage() {
+// Dynamic load: Pulls ghazals.json from repo, fallback to LocalStorage, fallback to Defaults
+async function loadCatalogFromStorage() {
+  // First, check if we can fetch './ghazals.json' natively
+  try {
+    const response = await fetch('./ghazals.json');
+    if (response.ok) {
+      const fetchedShers = await response.json();
+      if (Array.isArray(fetchedShers) && fetchedShers.length > 0 && fetchedShers[0]['line 1']) {
+        shers = fetchedShers;
+        saveCatalogToStorage();
+        selectSher(0);
+        console.log("Loaded ghazals directly from ghazals.json in repository");
+        return;
+      }
+    }
+  } catch (err) {
+    console.warn("Failed to fetch ghazals.json (expected during local direct filesystem load or if file missing). Falling back to LocalStorage.");
+  }
+
+  // Fallback to LocalStorage
   const data = localStorage.getItem('ghazal_studio_shers');
   if (data) {
     try {
       shers = JSON.parse(data);
+      // Verify schema keys
+      if (!shers[0]['line 1']) throw new Error("Old schema detected");
     } catch(e) {
       shers = JSON.parse(JSON.stringify(DEFAULT_PRESET_SHERS));
     }
@@ -306,6 +326,7 @@ function loadCatalogFromStorage() {
     shers = JSON.parse(JSON.stringify(DEFAULT_PRESET_SHERS));
     saveCatalogToStorage();
   }
+  selectSher(0);
 }
 
 function saveCatalogToStorage() {
@@ -320,28 +341,27 @@ function renderSavedListUI() {
     const item = document.createElement('div');
     item.className = i === curIndex ? 'sher-item active' : 'sher-item';
     item.onclick = (e) => {
-      // Avoid action triggers
       if (e.target.tagName === 'BUTTON' || e.target.closest('button')) return;
       selectSher(i);
     };
 
-    // Item contents HTML
+    const linePreview = `${sher['line 1'] || ''} / ${sher['line 2'] || ''}`;
+
     item.innerHTML = `
       <div class="sher-item-header">
-        <span class="sher-item-num">Slide ${String(i+1).padStart(2, '0')}</span>
+        <span class="sher-item-num">Couplet ${String(i+1).padStart(2, '0')}</span>
         <div class="sher-item-actions">
           <button class="sher-action-btn" title="Move Up" onclick="moveSher(${i}, -1)">▲</button>
           <button class="sher-action-btn" title="Move Down" onclick="moveSher(${i}, 1)">▼</button>
           <button class="sher-action-btn" title="Delete" onclick="deleteSher(${i})">🗑️</button>
         </div>
       </div>
-      <div class="sher-item-preview">${sher.d.replace(/\n/g, ' / ')}</div>
+      <div class="sher-item-preview">${linePreview}</div>
     `;
 
     container.appendChild(item);
   });
 
-  // Re-render bottom slider buttons
   renderPillDots();
 }
 
@@ -357,7 +377,6 @@ function renderPillDots() {
     dotsContainer.appendChild(btn);
   });
 
-  // Update save all button text
   document.getElementById('dl-all-btn').innerText = `↓ Save All ${shers.length}`;
 }
 
@@ -365,9 +384,12 @@ function selectSher(index) {
   curIndex = index;
   const sher = shers[index];
 
-  // Sync inputs
-  document.getElementById('input-devnagari').value = sher.d;
-  document.getElementById('input-roman').value = sher.r;
+  // Sync separated inputs matching user JSON keys
+  document.getElementById('input-line1').value = sher['line 1'] || '';
+  document.getElementById('input-line2').value = sher['line 2'] || '';
+  document.getElementById('input-eng1').value = sher['english line 1'] || '';
+  document.getElementById('input-eng2').value = sher['english line 2'] || '';
+  
   document.getElementById('input-tag').value = sher.tag || 'ग़ज़ल';
   document.getElementById('input-handle').value = sher.handle || '@thoughtskumar';
 
@@ -378,11 +400,13 @@ function selectSher(index) {
 
 function createNewSher() {
   const newSher = {
-    d: "यहाँ अपनी नयी पहली पंक्ति लिखें...\nऔर यहाँ अपनी दूसरी पंक्ति...",
-    r: "Type roman transcription line 1 here...\nAnd roman line 2...",
-    tag: "ग़ज़ल",
-    handle: shers[curIndex] ? shers[curIndex].handle : "@thoughtskumar",
-    annotations: []
+    "line 1": "यहाँ अपनी नयी पहली पंक्ति लिखें...",
+    "line 2": "और यहाँ अपनी दूसरी पंक्ति...",
+    "english line 1": "Type English line 1 transcription here...",
+    "english line 2": "And English line 2 transcription here...",
+    "meanings": {},
+    "tag": "ग़ज़ल",
+    "handle": shers[curIndex] ? shers[curIndex].handle : "@thoughtskumar"
   };
 
   shers.push(newSher);
@@ -408,7 +432,6 @@ function moveSher(index, direction) {
   const targetIndex = index + direction;
   if (targetIndex < 0 || targetIndex >= shers.length) return;
 
-  // Swap
   const temp = shers[index];
   shers[index] = shers[targetIndex];
   shers[targetIndex] = temp;
@@ -429,12 +452,11 @@ function resetToPresets() {
   }
 }
 
-// Export / Import JSON files
 function exportCatalog() {
   const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(shers, null, 2));
   const downloadAnchor = document.createElement('a');
   downloadAnchor.setAttribute("href", dataStr);
-  downloadAnchor.setAttribute("download", "ghazal_catalog.json");
+  downloadAnchor.setAttribute("download", "ghazals.json");
   document.body.appendChild(downloadAnchor);
   downloadAnchor.click();
   downloadAnchor.remove();
@@ -448,13 +470,13 @@ function importCatalog(event) {
   reader.onload = function(e) {
     try {
       const parsed = JSON.parse(e.target.result);
-      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].d && parsed[0].r) {
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0]['line 1']) {
         shers = parsed;
         saveCatalogToStorage();
         selectSher(0);
         alert("Poetry catalog imported successfully!");
       } else {
-        alert("Invalid file format. Make sure it is a valid list of couplets.");
+        alert("Invalid file format. Make sure it is a valid list of couplets with 'line 1' keys.");
       }
     } catch (err) {
       alert("Error parsing JSON file.");
@@ -464,11 +486,13 @@ function importCatalog(event) {
 }
 
 
-// 4. TEXT RENDERING & ANNOTATIONS SYSTEM
+// 4. TEXT RENDERING & ANNOTATIONS SYSTEM (MIGRATED TO USER SCHEMA)
 function updateCurrentSherText() {
   const activeSher = shers[curIndex];
-  activeSher.d = document.getElementById('input-devnagari').value;
-  activeSher.r = document.getElementById('input-roman').value;
+  activeSher['line 1'] = document.getElementById('input-line1').value;
+  activeSher['line 2'] = document.getElementById('input-line2').value;
+  activeSher['english line 1'] = document.getElementById('input-eng1').value;
+  activeSher['english line 2'] = document.getElementById('input-eng2').value;
   
   saveCatalogToStorage();
   renderCardCanvas();
@@ -487,26 +511,29 @@ function updateSignatures() {
 function renderCardCanvas() {
   const sher = shers[curIndex];
 
-  // Render text content
-  let devHtml = sher.d;
-  
-  // Sort annotations descending by word length to avoid replacing substrings incorrectly
-  const sortedAnnotations = [...(sher.annotations || [])].sort((a,b) => b.word.length - a.word.length);
+  // Combine lines using line break
+  let devHtml = (sher['line 1'] || '') + '\n' + (sher['line 2'] || '');
+  let romHtml = (sher['english line 1'] || '') + '\n' + (sher['english line 2'] || '');
 
-  sortedAnnotations.forEach(ann => {
-    if (ann.word && ann.meaning) {
-      // Escape special regex characters
-      const escapedWord = ann.word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+  // Sort meanings dictionary keys by length descending to replace accurately
+  const meaningsMap = sher.meanings || {};
+  const sortedWords = Object.keys(meaningsMap).sort((a,b) => b.length - a.length);
+
+  sortedWords.forEach(word => {
+    const meaning = meaningsMap[word];
+    if (word && meaning) {
+      const escapedWord = word.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
       const regex = new RegExp(escapedWord, 'g');
       
-      const annotationHtml = `<span class="annotated">${ann.word}<span class="meaning ${ann.pos}">${ann.meaning}</span></span>`;
+      // We automatically display meanings on top alignment (standard)
+      const annotationHtml = `<span class="annotated">${word}<span class="meaning top">${meaning}</span></span>`;
       devHtml = devHtml.replace(regex, annotationHtml);
     }
   });
 
   // Display Devnagari & Roman text
   document.getElementById('card-dev-display').innerHTML = devHtml.replace(/\n/g, '<br>');
-  document.getElementById('card-rom-display').innerText = sher.r;
+  document.getElementById('card-rom-display').innerHTML = romHtml.replace(/\n/g, '<br>');
 
   // Display Metadata Handle & Tag
   document.getElementById('card-tag').innerText = sher.tag || 'ग़ज़ल';
@@ -522,22 +549,25 @@ function renderAnnotationsUI() {
   listUI.innerHTML = '';
   const activeSher = shers[curIndex];
 
-  if (!activeSher.annotations || activeSher.annotations.length === 0) {
+  const meaningsMap = activeSher.meanings || {};
+  const words = Object.keys(meaningsMap);
+
+  if (words.length === 0) {
     listUI.innerHTML = '<div style="font-size:11px; color:#71717a; font-style:italic;">No annotations added yet. Click above to add!</div>';
     return;
   }
 
-  activeSher.annotations.forEach((ann, i) => {
+  words.forEach(word => {
+    const meaning = meaningsMap[word];
     const item = document.createElement('div');
     item.className = 'annotation-tag-item';
     item.innerHTML = `
       <div>
-        <span class="annotation-tag-text">${ann.word}</span>
+        <span class="annotation-tag-text">${word}</span>
         <span style="color:#71717a; margin: 0 4px;">➔</span>
-        <span class="annotation-tag-meaning">${ann.meaning}</span>
-        <span style="font-size: 9px; color:#6366f1; text-transform: uppercase; margin-left: 6px; padding: 2px 4px; background: rgba(99,102,241,0.1); border-radius:4px;">${ann.pos}</span>
+        <span class="annotation-tag-meaning">${meaning}</span>
       </div>
-      <button class="sher-action-btn" title="Delete Annotation" onclick="deleteAnnotation(${i})">🗑️</button>
+      <button class="sher-action-btn" title="Delete Annotation" onclick="deleteAnnotation('${word.replace(/'/g, "\\'")}')">🗑️</button>
     `;
     listUI.appendChild(item);
   });
@@ -545,11 +575,9 @@ function renderAnnotationsUI() {
 
 // Annotation Modal Functions
 function openAnnotationModal() {
-  // Clear modal inputs
   document.getElementById('modal-word-input').value = '';
   document.getElementById('modal-meaning-input').value = '';
-  document.getElementById('modal-position-select').value = 'top';
-
+  // Position selector is kept in modal but meanings always map on top/hover alignment natively
   document.getElementById('annotation-modal').classList.add('active');
 }
 
@@ -560,7 +588,6 @@ function closeAnnotationModal() {
 function saveAnnotationFromModal() {
   const word = document.getElementById('modal-word-input').value.trim();
   const meaning = document.getElementById('modal-meaning-input').value.trim();
-  const pos = document.getElementById('modal-position-select').value;
 
   if (!word || !meaning) {
     alert("Please fill in both the Word and its Translation Meaning.");
@@ -568,18 +595,20 @@ function saveAnnotationFromModal() {
   }
 
   const activeSher = shers[curIndex];
-  if (!activeSher.annotations) activeSher.annotations = [];
+  if (!activeSher.meanings) activeSher.meanings = {};
 
-  activeSher.annotations.push({ word, meaning, pos });
+  activeSher.meanings[word] = meaning;
   saveCatalogToStorage();
   renderCardCanvas();
   renderAnnotationsUI();
   closeAnnotationModal();
 }
 
-function deleteAnnotation(index) {
+function deleteAnnotation(word) {
   const activeSher = shers[curIndex];
-  activeSher.annotations.splice(index, 1);
+  if (activeSher.meanings && activeSher.meanings[word]) {
+    delete activeSher.meanings[word];
+  }
   saveCatalogToStorage();
   renderCardCanvas();
   renderAnnotationsUI();
@@ -608,11 +637,8 @@ function updateFonts() {
 function captureAndDownload(filename) {
   return new Promise((resolve) => {
     const card = document.getElementById('post-card');
-    
-    // Disable preview scaled CSS to capture full 1080x1080 resolution
     card.classList.remove('preview-mode');
 
-    // Retrieve active theme card background color
     let currentBg = '#faf8f5';
     if (customStylingMode) {
       currentBg = document.getElementById('cp-card-bg').value;
@@ -632,7 +658,6 @@ function captureAndDownload(filename) {
         link.href = canvas.toDataURL("image/png");
         link.click();
         
-        // Restore scale preview css
         card.classList.add('preview-mode');
         resolve();
       });
@@ -653,13 +678,11 @@ async function downloadAllImages() {
     btn.innerText = `... (${i + 1}/${shers.length})`;
     selectSher(i);
     
-    // Allow thread render pause
     await new Promise(r => setTimeout(r, 200)); 
     await captureAndDownload(`sher-${i + 1}.png`);
     await new Promise(r => setTimeout(r, 400)); 
   }
 
-  // Restore current
   selectSher(originalCur); 
   btn.innerText = `↓ Save All ${shers.length}`;
   btn.disabled = false;
@@ -670,10 +693,5 @@ async function downloadAllImages() {
 window.addEventListener('DOMContentLoaded', () => {
   renderThemePresets();
   loadCatalogFromStorage();
-  
-  // Select first sher in loaded list
-  selectSher(0);
-
-  // Apply default fonts
   updateFonts();
 });

@@ -30,15 +30,24 @@
     <!-- TAB 1: EDITOR PANEL -->
     <div id="tab-editor" class="tab-content active">
       <div class="section-title">Compose Couplet</div>
-      
       <div class="form-group">
-        <label class="form-label" for="input-devnagari">Devnagari (Hindi)</label>
-        <textarea id="input-devnagari" class="form-textarea" placeholder="लिखें देवनागरी में पहली और दूसरी पंक्ति..." oninput="updateCurrentSherText()"></textarea>
+        <label class="form-label" for="input-line1">Line 1 (Devnagari)</label>
+        <input type="text" id="input-line1" class="form-input" placeholder="पहली पंक्ति लिखें..." oninput="updateCurrentSherText()" />
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="input-roman">Roman Transcription (English)</label>
-        <textarea id="input-roman" class="form-textarea" placeholder="Type Roman transcription here..." oninput="updateCurrentSherText()"></textarea>
+        <label class="form-label" for="input-line2">Line 2 (Devnagari)</label>
+        <input type="text" id="input-line2" class="form-input" placeholder="दूसरी पंक्ति लिखें..." oninput="updateCurrentSherText()" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="input-eng1">English Line 1 (Roman)</label>
+        <input type="text" id="input-eng1" class="form-input" placeholder="English line 1..." oninput="updateCurrentSherText()" />
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="input-eng2">English Line 2 (Roman)</label>
+        <input type="text" id="input-eng2" class="form-input" placeholder="English line 2..." oninput="updateCurrentSherText()" />
       </div>
 
       <div class="section-title">Annotations & Meanings</div>
