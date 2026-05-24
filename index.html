@@ -125,6 +125,22 @@
         </select>
       </div>
 
+      <div class="section-title">Background Presets</div>
+      <div class="bg-preset-grid">
+        <div class="bg-preset-card active" data-bg-path="none" onclick="applyPresetBackground('none')">
+          <div class="bg-preset-thumb-none"></div>
+          <span class="bg-preset-name">None (Solid)</span>
+        </div>
+        <div class="bg-preset-card" data-bg-path="background/back1.png" onclick="applyPresetBackground('background/back1.png')">
+          <div class="bg-preset-thumb" style="background-image: url('background/back1.png');"></div>
+          <span class="bg-preset-name">Minimalist Linen</span>
+        </div>
+        <div class="bg-preset-card" data-bg-path="background/back2.png" onclick="applyPresetBackground('background/back2.png')">
+          <div class="bg-preset-thumb" style="background-image: url('background/back2.png');"></div>
+          <span class="bg-preset-name">Classic Canvas</span>
+        </div>
+      </div>
+
       <div class="section-title">Color Themes presets</div>
       <div class="form-group">
         <label class="form-label">Subtle presets</label>
@@ -321,6 +337,27 @@
       <div class="modal-footer">
         <button class="btn-secondary" onclick="closeAnnotationModal()">Cancel</button>
         <button class="btn-primary" onclick="saveAnnotationFromModal()">Save Annotation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Premium Reusable Dialog Modal (Alert / Confirm / Prompt) -->
+  <div class="modal-overlay" id="custom-dialog-modal">
+    <div class="modal-content" style="max-width: 400px; padding: 24px;">
+      <div class="modal-header" style="margin-bottom: 16px;">
+        <h3 class="modal-title" id="dialog-title">Confirm Action</h3>
+        <button class="modal-close" onclick="closeCustomDialog()">&times;</button>
+      </div>
+      <div style="font-size: 13px; color: #d4d4d8; line-height: 1.6; margin-bottom: 20px;" id="dialog-message">
+        Are you sure you want to proceed?
+      </div>
+      <div class="form-group" id="dialog-input-group" style="display: none; margin-bottom: 20px;">
+        <label class="form-label" id="dialog-input-label" for="dialog-text-input">Value</label>
+        <input type="text" id="dialog-text-input" class="form-input" placeholder="Enter here...">
+      </div>
+      <div class="modal-footer" style="gap: 8px;">
+        <button class="btn-secondary" id="btn-dialog-cancel" style="padding: 10px 16px;" onclick="closeCustomDialog()">Cancel</button>
+        <button class="btn-primary" id="btn-dialog-confirm" style="padding: 10px 16px; background: #6366f1; border-color: #6366f1;">Confirm</button>
       </div>
     </div>
   </div>

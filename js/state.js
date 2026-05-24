@@ -239,8 +239,8 @@ function switchGhazalProject(index) {
   selectCouplet(0);
 }
 
-function createNewGhazalProject() {
-  const title = prompt("Enter a title for the new Ghazal project:", `Ghazal ${ghazals.length + 1}`);
+async function createNewGhazalProject() {
+  const title = await showCustomPrompt("New Ghazal", "Enter a title for the new Ghazal project:", `Ghazal ${ghazals.length + 1}`, "Ghazal title...");
   if (!title) return;
 
   const newGhazal = {
@@ -264,9 +264,9 @@ function createNewGhazalProject() {
   switchGhazalProject(ghazals.length - 1);
 }
 
-function renameCurrentGhazal() {
+async function renameCurrentGhazal() {
   const g = ghazals[curGhazalIndex];
-  const newTitle = prompt("Rename Ghazal project:", g.title);
+  const newTitle = await showCustomPrompt("Rename Ghazal", "Enter a new title for the active Ghazal project:", g.title, "Ghazal title...");
   if (!newTitle) return;
 
   g.title = newTitle;
@@ -274,14 +274,13 @@ function renameCurrentGhazal() {
   renderGhazalSelectorUI();
 }
 
-function deleteCurrentGhazalProject() {
+async function deleteCurrentGhazalProject() {
   if (ghazals.length <= 1) {
-    alert("You must keep at least one Ghazal project in your studio.");
+    await showCustomAlert("Delete Ghazal", "You must keep at least one Ghazal project in your studio.");
     return;
   }
-  if (!confirm(`Are you sure you want to delete the active Ghazal "${ghazals[curGhazalIndex].title}"? This cannot be undone.`)) {
-    return;
-  }
+  const confirmed = await showCustomConfirm("Delete Ghazal", `Are you sure you want to delete the active Ghazal "${ghazals[curGhazalIndex].title}"? This cannot be undone.`);
+  if (!confirmed) return;
 
   ghazals.splice(curGhazalIndex, 1);
   if (curGhazalIndex >= ghazals.length) {
@@ -310,15 +309,15 @@ function createNewCouplet() {
   selectCouplet(curCoupletIndex + 1);
 }
 
-function deleteCouplet(index) {
+async function deleteCouplet(index) {
   const activeGhazal = ghazals[curGhazalIndex];
   if (activeGhazal.couplets.length <= 1) {
-    alert("You must keep at least one couplet in your Ghazal catalog.");
+    await showCustomAlert("Delete Couplet", "You must keep at least one couplet in your Ghazal catalog.");
     return;
   }
-  if (!confirm("Are you sure you want to delete this active couplet slide?")) {
-    return;
-  }
+  const confirmed = await showCustomConfirm("Delete Couplet Slide", "Are you sure you want to delete this active couplet slide?");
+  if (!confirmed) return;
+  
   activeGhazal.couplets.splice(index, 1);
   saveCatalogToStorage();
   renderGhazalSelectorUI();
@@ -346,8 +345,9 @@ function moveCouplet(index, direction) {
   selectCouplet(curCoupletIndex);
 }
 
-function resetToPresets() {
-  if (confirm("This will reset all your Ghazal projects back to original presets. Continue?")) {
+async function resetToPresets() {
+  const confirmed = await showCustomConfirm("Reset Studio", "This will reset all your Ghazal projects back to original presets. Continue?");
+  if (confirmed) {
     ghazals = JSON.parse(JSON.stringify(DEFAULT_PRESET_GHAZALS));
     saveCatalogToStorage();
     renderGhazalSelectorUI();
@@ -370,7 +370,7 @@ function importCatalog(event) {
   if (!file) return;
 
   const reader = new FileReader();
-  reader.onload = function(e) {
+  reader.onload = async function(e) {
     try {
       const parsed = JSON.parse(e.target.result);
       if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].couplets) {
@@ -378,13 +378,107 @@ function importCatalog(event) {
         saveCatalogToStorage();
         renderGhazalSelectorUI();
         switchGhazalProject(0);
-        alert("Hierarchical poetry catalog imported successfully!");
+        await showCustomAlert("Import Success", "Hierarchical poetry catalog imported successfully!");
       } else {
-        alert("Invalid file format. Make sure it contains 'couplets' sub-arrays.");
+        await showCustomAlert("Import Error", "Invalid file format. Make sure it contains 'couplets' sub-arrays.");
       }
     } catch (err) {
-      alert("Error parsing JSON file.");
+      await showCustomAlert("Import Error", "Error parsing JSON file.");
     }
   };
   reader.readAsText(file);
+}
+
+/* ==========================================================================
+   4. PREMIUM REUSABLE DIALOG SYSTEM (Alert / Confirm / Prompt)
+   ========================================================================== */
+let dialogResolve = null;
+
+function showCustomPrompt(title, message, defaultValue, placeholder = "") {
+  return new Promise((resolve) => {
+    dialogResolve = resolve;
+    
+    document.getElementById('dialog-title').innerText = title;
+    document.getElementById('dialog-message').innerText = message;
+    
+    const inputGroup = document.getElementById('dialog-input-group');
+    inputGroup.style.display = 'flex';
+    const textInput = document.getElementById('dialog-text-input');
+    textInput.value = defaultValue || '';
+    textInput.placeholder = placeholder;
+    
+    const modal = document.getElementById('custom-dialog-modal');
+    modal.classList.add('active');
+    
+    setTimeout(() => textInput.focus(), 150);
+    
+    const confirmBtn = document.getElementById('btn-dialog-confirm');
+    confirmBtn.onclick = () => {
+      const val = textInput.value.trim();
+      closeCustomDialog();
+      resolve(val);
+    };
+    
+    const cancelBtn = document.getElementById('btn-dialog-cancel');
+    cancelBtn.onclick = () => {
+      closeCustomDialog();
+      resolve(null);
+    };
+  });
+}
+
+function showCustomConfirm(title, message) {
+  return new Promise((resolve) => {
+    dialogResolve = resolve;
+    
+    document.getElementById('dialog-title').innerText = title;
+    document.getElementById('dialog-message').innerText = message;
+    
+    document.getElementById('dialog-input-group').style.display = 'none';
+    
+    const modal = document.getElementById('custom-dialog-modal');
+    modal.classList.add('active');
+    
+    const confirmBtn = document.getElementById('btn-dialog-confirm');
+    confirmBtn.onclick = () => {
+      closeCustomDialog();
+      resolve(true);
+    };
+    
+    const cancelBtn = document.getElementById('btn-dialog-cancel');
+    cancelBtn.onclick = () => {
+      closeCustomDialog();
+      resolve(false);
+    };
+  });
+}
+
+function showCustomAlert(title, message) {
+  return new Promise((resolve) => {
+    dialogResolve = resolve;
+    
+    document.getElementById('dialog-title').innerText = title;
+    document.getElementById('dialog-message').innerText = message;
+    
+    document.getElementById('dialog-input-group').style.display = 'none';
+    
+    const cancelBtn = document.getElementById('btn-dialog-cancel');
+    cancelBtn.style.display = 'none'; // Hide cancel button for alert
+    
+    const modal = document.getElementById('custom-dialog-modal');
+    modal.classList.add('active');
+    
+    const confirmBtn = document.getElementById('btn-dialog-confirm');
+    confirmBtn.onclick = () => {
+      cancelBtn.style.display = 'inline-block'; // Restore cancel button for future confirm/prompts
+      closeCustomDialog();
+      resolve();
+    };
+  });
+}
+
+function closeCustomDialog() {
+  const modal = document.getElementById('custom-dialog-modal');
+  if (modal) modal.classList.remove('active');
+  dialogResolve = null;
 }

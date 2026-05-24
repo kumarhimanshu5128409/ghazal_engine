@@ -28,6 +28,7 @@ const colorThemes = [
 
 let activeThemeIndex = 0;
 let customStylingMode = false;
+let activeBackgroundPreset = 'none';
 
 // Initialize theme presets UI grids
 function renderThemePresets() {
@@ -59,16 +60,34 @@ function renderThemePresets() {
 }
 
 function applyPresetTheme(index) {
-  if (customStylingMode) {
-    const toggle = document.getElementById('toggle-custom-styling');
-    if (toggle) toggle.checked = false;
-    toggleCustomStylingMode();
-  }
-
   activeThemeIndex = index;
   const t = colorThemes[index];
   const root = document.documentElement;
 
+  if (customStylingMode) {
+    // In Custom Styling Mode, we want to update the text, border, and handle colors to match the theme preset,
+    // but fully preserve the custom card background color, gradient, image, padding, opacity, and blur settings!
+    const cpDev = document.getElementById('cp-dev');
+    if (cpDev) cpDev.value = convertToHex(t.dev);
+    const cpRoman = document.getElementById('cp-roman');
+    if (cpRoman) cpRoman.value = convertToHex(t.roman);
+    const cpMeaning = document.getElementById('cp-meaning');
+    if (cpMeaning) cpMeaning.value = convertToHex(t.meaning);
+    const cpLines = document.getElementById('cp-lines');
+    if (cpLines) cpLines.value = convertToHex(t.lines);
+    const cpHandle = document.getElementById('cp-handle');
+    if (cpHandle) cpHandle.value = convertToHex(t.handle);
+
+    // Apply the custom text/line styling immediately while keeping active custom background configurations
+    applyCustomColors();
+
+    document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
+    const activeBtn = document.getElementById(`theme-btn-${index}`);
+    if (activeBtn) activeBtn.classList.add('active');
+    return;
+  }
+
+  // Standard Theme Preset application (when Custom Styling is disabled)
   root.style.setProperty('--page-bg', t.pageBg);
   root.style.setProperty('--card-bg', t.cardBg);
   root.style.setProperty('--line-color', t.lines);
@@ -78,7 +97,7 @@ function applyPresetTheme(index) {
   root.style.setProperty('--meaning-color', t.meaning);
   root.style.setProperty('--roman-color', t.roman);
 
-  // Sync custom color inputs
+  // Sync custom color inputs so they match the standard theme preset
   const cpCardBg = document.getElementById('cp-card-bg');
   if (cpCardBg) cpCardBg.value = convertToHex(t.cardBg);
   const cpDev = document.getElementById('cp-dev');
@@ -100,6 +119,12 @@ function applyPresetTheme(index) {
   document.querySelectorAll('.theme-btn').forEach(btn => btn.classList.remove('active'));
   const activeBtn = document.getElementById(`theme-btn-${index}`);
   if (activeBtn) activeBtn.classList.add('active');
+
+  // Reset preset background UI active state since we're using a standard solid theme preset
+  activeBackgroundPreset = 'none';
+  if (typeof updateBackgroundPresetUI === 'function') {
+    updateBackgroundPresetUI();
+  }
 }
 
 function convertToHex(colorStr) {
@@ -196,7 +221,7 @@ function applyCustomColors() {
   if (blurOverlay && card) {
     if (bgImgUrl) {
       card.style.backgroundImage = `url(${bgImgUrl})`;
-      blurOverlay.style.background = `rgba(var(--card-bg), ${(100 - imgOpacity) / 100})`;
+      blurOverlay.style.background = `rgba(${hexToRgbString(cardBg)}, ${(100 - imgOpacity) / 100})`;
       blurOverlay.style.backdropFilter = `blur(${imgBlur}px)`;
       blurOverlay.style.webkitBackdropFilter = `blur(${imgBlur}px)`;
     } else {
@@ -205,6 +230,70 @@ function applyCustomColors() {
       blurOverlay.style.webkitBackdropFilter = 'none';
     }
   }
+}
+
+// Convert Hex to RGB triplet string for standard CSS rgba compatibility
+function hexToRgbString(hex) {
+  if (!hex) return '250, 248, 245';
+  hex = hex.replace('#', '');
+  let r = 0, g = 0, b = 0;
+  if (hex.length === 3) {
+    r = parseInt(hex.substring(0, 1) + hex.substring(0, 1), 16);
+    g = parseInt(hex.substring(1, 2) + hex.substring(1, 2), 16);
+    b = parseInt(hex.substring(2, 3) + hex.substring(2, 3), 16);
+  } else if (hex.length === 6) {
+    r = parseInt(hex.substring(0, 2), 16);
+    g = parseInt(hex.substring(2, 4), 16);
+    b = parseInt(hex.substring(4, 6), 16);
+  }
+  return `${r}, ${g}, ${b}`;
+}
+
+// Apply selected premium preset background to all slides
+function applyPresetBackground(bgPath) {
+  activeBackgroundPreset = bgPath;
+  
+  // Set in Custom styling input field
+  const inputBgImg = document.getElementById('input-bg-image');
+  if (inputBgImg) {
+    inputBgImg.value = bgPath === 'none' ? '' : bgPath;
+  }
+
+  // Adjust opacity range slider dynamically so texture is beautifully visible
+  const rangeOpacity = document.getElementById('range-bg-opacity');
+  const labelOpacity = document.getElementById('label-bg-opacity');
+  if (bgPath !== 'none') {
+    if (rangeOpacity) rangeOpacity.value = 85;
+    if (labelOpacity) labelOpacity.innerText = '85%';
+  } else {
+    if (rangeOpacity) rangeOpacity.value = 10;
+    if (labelOpacity) labelOpacity.innerText = '10%';
+  }
+  
+  // Ensure we turn on custom styling mode so the background is visible
+  const toggle = document.getElementById('toggle-custom-styling');
+  if (toggle && !toggle.checked) {
+    toggle.checked = true;
+    toggleCustomStylingMode();
+  } else {
+    // If already enabled, apply custom colors directly
+    applyCustomColors();
+  }
+  
+  // Sync active states of UI preset cards
+  updateBackgroundPresetUI();
+}
+
+// Synchronize the active preset cards in the UI Styling tab
+function updateBackgroundPresetUI() {
+  document.querySelectorAll('.bg-preset-card').forEach(card => {
+    const path = card.getAttribute('data-bg-path');
+    if (path === activeBackgroundPreset) {
+      card.classList.add('active');
+    } else {
+      card.classList.remove('active');
+    }
+  });
 }
 
 function handleLocalImageUpload(event) {
