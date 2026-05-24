@@ -336,7 +336,11 @@
     </div>
   </div>
 
-  <!-- Link external app.js -->
-  <script src="./app.js"></script>
+  <!-- Link modular scripts in sequential dependency order -->
+  <script src="./js/state.js"></script>
+  <script src="./js/theme.js"></script>
+  <script src="./js/render.js"></script>
+  <script src="./js/export.js"></script>
+  <script src="./js/main.js"></script>
 </body>
 </html>

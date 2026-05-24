@@ -1,0 +1,21 @@
+{
+  "name": "ghazal-studio",
+  "version": "1.0.0",
+  "description": "Premium Ghazal Card Creator & Dynamic Poetry Studio",
+  "main": "index.html",
+  "scripts": {
+    "dev": "browser-sync start --server --files \"index.html, styles.css, ghazals.json, js/**/*.js\"",
+    "start": "npm run dev"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.3"
+  },
+  "keywords": [
+    "poetry",
+    "ghazal",
+    "instagram",
+    "card-generator"
+  ],
+  "author": "Kumar Himanshu",
+  "license": "MIT"
+}
