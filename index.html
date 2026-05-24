@@ -36,9 +36,20 @@
           <span>Select Active Ghazal</span>
           <span style="font-size: 9px; background: rgba(165, 180, 252, 0.1); padding: 2px 6px; border-radius: 4px;">Collection</span>
         </label>
-        <select id="select-ghazal-project" class="form-select" style="margin-top: 6px;" onchange="switchGhazalProject(parseInt(this.value))">
+        <!-- Fallback hidden native select -->
+        <select id="select-ghazal-project" style="display: none;">
           <!-- Dynamic options -->
         </select>
+        <!-- Custom Premium Select Dropdown -->
+        <div class="custom-select-wrapper" id="custom-select-wrapper">
+          <div class="custom-select-trigger" onclick="toggleCustomSelect(event)">
+            <span id="custom-select-val">Select Active Ghazal</span>
+            <div class="arrow"></div>
+          </div>
+          <div class="custom-options" id="custom-select-options">
+            <!-- Option items populated by state.js -->
+          </div>
+        </div>
         <div style="display: flex; gap: 6px; margin-top: 8px;">
           <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px;" onclick="renameCurrentGhazal()" title="Rename active Ghazal">Rename</button>
           <button class="btn-secondary" style="flex: 1; padding: 6px; font-size: 11px;" onclick="createNewGhazalProject()" title="Create new blank Ghazal">+ New</button>

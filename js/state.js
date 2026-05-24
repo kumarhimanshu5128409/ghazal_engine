@@ -148,20 +148,68 @@ function saveCatalogToStorage() {
   localStorage.setItem('ghazal_studio_hierarchical_catalog', JSON.stringify(ghazals));
 }
 
+// Toggle custom dropdown select
+function toggleCustomSelect(e) {
+  if (e) e.stopPropagation();
+  const wrapper = document.getElementById('custom-select-wrapper');
+  if (wrapper) {
+    wrapper.classList.toggle('open');
+  }
+}
+
+// Close custom dropdown when clicking outside
+window.addEventListener('click', () => {
+  const wrapper = document.getElementById('custom-select-wrapper');
+  if (wrapper) {
+    wrapper.classList.remove('open');
+  }
+});
+
 // Ghazal Selector Dropdown UI Handler
 function renderGhazalSelectorUI() {
   const select = document.getElementById('select-ghazal-project');
-  if (!select) return;
-  select.innerHTML = '';
+  const customValSpan = document.getElementById('custom-select-val');
+  const customOptionsDiv = document.getElementById('custom-select-options');
 
-  ghazals.forEach((g, i) => {
-    const opt = document.createElement('option');
-    opt.value = i;
-    opt.innerText = `${g.title || `Ghazal ${i+1}`} (${g.couplets ? g.couplets.length : 0} couplets)`;
-    select.appendChild(opt);
-  });
+  const activeGhazal = ghazals[curGhazalIndex];
+  const activeText = activeGhazal 
+    ? `${activeGhazal.title || `Ghazal ${curGhazalIndex+1}`} (${activeGhazal.couplets ? activeGhazal.couplets.length : 0} couplets)`
+    : "Select Active Ghazal";
 
-  select.value = curGhazalIndex;
+  if (customValSpan) {
+    customValSpan.innerText = activeText;
+  }
+
+  if (customOptionsDiv) {
+    customOptionsDiv.innerHTML = '';
+    ghazals.forEach((g, i) => {
+      const optDiv = document.createElement('div');
+      optDiv.className = 'custom-option';
+      if (i === curGhazalIndex) {
+        optDiv.classList.add('selected');
+      }
+      optDiv.innerText = `${g.title || `Ghazal ${i+1}`} (${g.couplets ? g.couplets.length : 0} couplets)`;
+      optDiv.addEventListener('click', (e) => {
+        e.stopPropagation();
+        switchGhazalProject(i);
+        const wrapper = document.getElementById('custom-select-wrapper');
+        if (wrapper) wrapper.classList.remove('open');
+      });
+      customOptionsDiv.appendChild(optDiv);
+    });
+  }
+
+  // Fallback native select syncing
+  if (select) {
+    select.innerHTML = '';
+    ghazals.forEach((g, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.innerText = `${g.title || `Ghazal ${i+1}`} (${g.couplets ? g.couplets.length : 0} couplets)`;
+      select.appendChild(opt);
+    });
+    select.value = curGhazalIndex;
+  }
 }
 
 function switchGhazalProject(index) {
@@ -171,6 +219,23 @@ function switchGhazalProject(index) {
   
   const select = document.getElementById('select-ghazal-project');
   if (select) select.value = index;
+
+  const customValSpan = document.getElementById('custom-select-val');
+  const activeGhazal = ghazals[index];
+  if (customValSpan && activeGhazal) {
+    customValSpan.innerText = `${activeGhazal.title || `Ghazal ${index+1}`} (${activeGhazal.couplets ? activeGhazal.couplets.length : 0} couplets)`;
+  }
+
+  // Update selected class in custom options
+  const customOptionsDiv = document.getElementById('custom-select-options');
+  if (customOptionsDiv) {
+    const options = customOptionsDiv.querySelectorAll('.custom-option');
+    options.forEach((opt, idx) => {
+      if (idx === index) opt.classList.add('selected');
+      else opt.classList.remove('selected');
+    });
+  }
+
   selectCouplet(0);
 }
 
