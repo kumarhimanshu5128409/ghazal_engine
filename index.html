@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ghazal Studio - Premium poetry card editor & exporter</title>
+  <!-- Load html2canvas for flawless local PNG exports -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- Link external styles.css -->
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+
+  <!-- ==========================================
+     1. LEFT SIDEBAR (Dynamic Control Panel)
+     ========================================== -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-title">Ghazal Studio</div>
+      <div class="sidebar-subtitle">Interactive Poetry Engine</div>
+    </div>
+
+    <!-- Tabs Navigation -->
+    <div class="tabs-nav">
+      <button class="tab-btn active" onclick="switchTab('editor')">Editor</button>
+      <button class="tab-btn" onclick="switchTab('catalog')">Saved List</button>
+      <button class="tab-btn" onclick="switchTab('design')">Design</button>
+    </div>
+
+    <!-- TAB 1: EDITOR PANEL -->
+    <div id="tab-editor" class="tab-content active">
+      <div class="section-title">Compose Couplet</div>
+      
+      <div class="form-group">
+        <label class="form-label" for="input-devnagari">Devnagari (Hindi)</label>
+        <textarea id="input-devnagari" class="form-textarea" placeholder="लिखें देवनागरी में पहली और दूसरी पंक्ति..." oninput="updateCurrentSherText()"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="input-roman">Roman Transcription (English)</label>
+        <textarea id="input-roman" class="form-textarea" placeholder="Type Roman transcription here..." oninput="updateCurrentSherText()"></textarea>
+      </div>
+
+      <div class="section-title">Annotations & Meanings</div>
+      <div class="form-group">
+        <button class="btn-secondary" style="margin-bottom: 8px;" onclick="openAnnotationModal()">+ Add Word Meaning</button>
+        <div id="annotations-list-ui" style="display: flex; flex-direction: column; gap: 8px;">
+          <!-- Inline annotations will render here -->
+        </div>
+      </div>
+
+      <div class="section-title">Signatures & Tags</div>
+      <div class="form-group">
+        <label class="form-label" for="input-tag">Genre Tag</label>
+        <input type="text" id="input-tag" class="form-input" placeholder="ग़ज़ल" oninput="updateSignatures()" />
+      </div>
+      <div class="form-group">
+        <label class="form-label" for="input-handle">Signature Handle</label>
+        <input type="text" id="input-handle" class="form-input" placeholder="@thoughtskumar" oninput="updateSignatures()" />
+      </div>
+    </div>
+
+    <!-- TAB 2: SAVED CATALOG -->
+    <div id="tab-catalog" class="tab-content">
+      <div class="section-title">My Poetry Catalog</div>
+      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+        <button class="btn-primary" style="flex: 1; font-size: 11px; padding: 8px 10px;" onclick="createNewSher()">+ Add New Sher</button>
+        <button class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px 10px;" onclick="resetToPresets()">Reset to Default</button>
+      </div>
+      <div class="sher-list-container" id="saved-shers-list">
+        <!-- Saved shers list items go here -->
+      </div>
+
+      <div class="section-title">Import / Export Catalog</div>
+      <div style="display: flex; gap: 8px;">
+        <button class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px;" onclick="exportCatalog()">Export JSON</button>
+        <label class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px; cursor: pointer; text-align: center;">
+          Import JSON
+          <input type="file" id="import-json-file" style="display:none;" onchange="importCatalog(event)" accept=".json">
+        </label>
+      </div>
+    </div>
+
+    <!-- TAB 3: DESIGN SUITE -->
+    <div id="tab-design" class="tab-content">
+      <div class="section-title">Layout Style</div>
+      <div class="btn-grid">
+        <button id="btn-layout-centered" class="ctrl-btn active" onclick="applyLayout('centered')">Classic Centered</button>
+        <button id="btn-layout-left" class="ctrl-btn" onclick="applyLayout('left')">Modern Left-Aligned</button>
+      </div>
+
+      <div class="section-title">Typography Suite</div>
+      <div class="form-group">
+        <label class="form-label" for="select-font-dev">Hindi (Devnagari) Font</label>
+        <select id="select-font-dev" class="form-select" onchange="updateFonts()">
+          <option value="'Akshar', sans-serif">Akshar (Modern Clean)</option>
+          <option value="'Kalam', cursive">Kalam (Handwriting)</option>
+          <option value="'Rozha One', serif">Rozha One (Bold Traditional)</option>
+          <option value="'Yatra One', cursive">Yatra One (Artistic Heritage)</option>
+          <option value="'Montserrat', sans-serif">Montserrat (Geometric Sans)</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="select-font-rom">Roman (English) Font</label>
+        <select id="select-font-rom" class="form-select" onchange="updateFonts()">
+          <option value="'IM Fell English', serif">IM Fell English (Classic Serif)</option>
+          <option value="'Playfair Display', serif">Playfair Display (Premium Serif)</option>
+          <option value="'Cormorant Garamond', serif">Cormorant Garamond (Fine Elegant)</option>
+          <option value="'Cinzel', serif">Cinzel (Cinematic Roman)</option>
+          <option value="'Great Vibes', cursive">Great Vibes (Calligraphy Script)</option>
+          <option value="'Montserrat', sans-serif">Montserrat (Modern Sans)</option>
+        </select>
+      </div>
+
+      <div class="section-title">Theme presets</div>
+      <div class="form-group">
+        <label class="form-label">Subtle presets</label>
+        <div class="btn-grid" id="themes-subtle">
+          <!-- Populated by presets in app.js -->
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">High-Contrast presets</label>
+        <div class="btn-grid themes-contrast" id="themes-contrast">
+          <!-- Populated by presets in app.js -->
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Two-Tone presets</label>
+        <div class="btn-grid themes-twotone" id="themes-twotone">
+          <!-- Populated by presets in app.js -->
+        </div>
+      </div>
+
+      <div class="section-title">Custom Styling Studio</div>
+      <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 8px;">
+        <input type="checkbox" id="toggle-custom-styling" onchange="toggleCustomStylingMode()" style="cursor: pointer; width: 16px; height: 16px;">
+        <label for="toggle-custom-styling" style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #a5b4fc; cursor: pointer;">Enable Custom Styles</label>
+      </div>
+
+      <div id="custom-styling-controls" style="opacity: 0.4; pointer-events: none; transition: opacity 0.2s ease; display: flex; flex-direction: column; gap: 12px;">
+        <div class="color-picker-row">
+          <div class="color-input-container">
+            <input type="color" id="cp-card-bg" class="color-picker" oninput="applyCustomColors()" value="#faf8f5">
+            <span class="color-label">Card BG</span>
+          </div>
+          <div class="color-input-container">
+            <input type="color" id="cp-dev" class="color-picker" oninput="applyCustomColors()" value="#292524">
+            <span class="color-label">Devnagari Text</span>
+          </div>
+        </div>
+
+        <div class="color-picker-row">
+          <div class="color-input-container">
+            <input type="color" id="cp-roman" class="color-picker" oninput="applyCustomColors()" value="#78716c">
+            <span class="color-label">Roman Text</span>
+          </div>
+          <div class="color-input-container">
+            <input type="color" id="cp-meaning" class="color-picker" oninput="applyCustomColors()" value="#a8a29e">
+            <span class="color-label">Meaning Text</span>
+          </div>
+        </div>
+
+        <div class="color-picker-row">
+          <div class="color-input-container">
+            <input type="color" id="cp-lines" class="color-picker" oninput="applyCustomColors()" value="#e5e0d8">
+            <span class="color-label">Borders / Lines</span>
+          </div>
+          <div class="color-input-container">
+            <input type="color" id="cp-handle" class="color-picker" oninput="applyCustomColors()" value="#a8a29e">
+            <span class="color-label">Signature / Tag</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="select-bg-style">Background Style</label>
+          <select id="select-bg-style" class="form-select" onchange="applyCustomColors()">
+            <option value="solid">Solid Color</option>
+            <option value="gradient-linear">Linear Gradient</option>
+            <option value="gradient-radial">Radial Gradient</option>
+          </select>
+        </div>
+
+        <div id="gradient-pickers" class="color-picker-row" style="display: none;">
+          <div class="color-input-container">
+            <input type="color" id="cp-grad-start" class="color-picker" oninput="applyCustomColors()" value="#ffffff">
+            <span class="color-label">Grad Start</span>
+          </div>
+          <div class="color-input-container">
+            <input type="color" id="cp-grad-end" class="color-picker" oninput="applyCustomColors()" value="#ebd9d9">
+            <span class="color-label">Grad End</span>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label" for="input-bg-image">Background Image URL</label>
+          <input type="text" id="input-bg-image" class="form-input" placeholder="https://images.unsplash.com/photo-..." oninput="applyCustomColors()" />
+          <div style="font-size: 10px; color: #71717a; margin-top: 4px;">OR upload a local image file below:</div>
+          <input type="file" id="input-bg-image-file" class="form-input" style="padding: 4px; font-size:11px;" accept="image/*" onchange="handleLocalImageUpload(event)" />
+        </div>
+
+        <div class="range-container">
+          <div class="range-val">
+            <span>Image Opacity</span>
+            <span id="label-bg-opacity">10%</span>
+          </div>
+          <input type="range" id="range-bg-opacity" min="0" max="100" value="10" oninput="applyCustomColors()" />
+        </div>
+
+        <div class="range-container">
+          <div class="range-val">
+            <span>Image Blur</span>
+            <span id="label-bg-blur">0px</span>
+          </div>
+          <input type="range" id="range-bg-blur" min="0" max="40" value="0" oninput="applyCustomColors()" />
+        </div>
+
+        <div class="range-container">
+          <div class="range-val">
+            <span>Layout Card Padding</span>
+            <span id="label-card-padding">100px</span>
+          </div>
+          <input type="range" id="range-card-padding" min="60" max="180" value="100" oninput="applyCustomColors()" />
+        </div>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+          <label for="toggle-lines-visible" style="font-size: 11px; font-weight: 600; text-transform: uppercase; color: #d4d4d8; cursor: pointer;">Show Card Border Lines</label>
+          <input type="checkbox" id="toggle-lines-visible" checked onchange="applyCustomColors()" style="cursor: pointer; width: 16px; height: 16px;">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+     2. RIGHT WORKSPACE (Preview Canvas)
+     ========================================== -->
+  <div class="main-area">
+    <div class="workspace-grid"></div>
+    
+    <!-- Scaled viewport container for the 1080x1080 canvas -->
+    <div class="view-port">
+      <div class="card preview-mode" id="post-card" data-layout="centered">
+        <!-- Background Blur overlay (for images) -->
+        <div class="card-bg-blur" id="card-bg-blur-overlay"></div>
+        
+        <!-- Standard structural elements in layout content wrapper -->
+        <div class="card-content-wrapper">
+          <div class="line-top"></div>
+          <div class="line-bot"></div>
+          <div class="tag" id="card-tag">ग़ज़ल</div>
+          <div class="handle" id="card-handle">@thoughtskumar</div>
+          
+          <div class="content-area">
+            <div class="devnagari" id="card-dev-display"></div>
+            <div class="sep"></div>
+            <div class="roman" id="card-rom-display"></div>
+          </div>
+
+          <div class="foot-r" id="card-number-display">01 / 07</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Floating Pill Shape bar at bottom -->
+    <div class="bottom-bar">
+      <div class="nav" id="nav-dots">
+        <!-- Switch buttons populated by app.js -->
+      </div>
+      <div class="action-btns">
+        <button class="dl-btn" onclick="downloadSingleImage()">↓ Current</button>
+        <button class="dl-btn dl-all-btn" id="dl-all-btn" onclick="downloadAllImages()">↓ Save All 7</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==========================================
+     3. INTERACTIVE MODAL OVERLAYS (Annotations)
+     ========================================== -->
+  <div class="modal-overlay" id="annotation-modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title">Word Meaning Editor</h3>
+        <button class="modal-close" onclick="closeAnnotationModal()">&times;</button>
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="modal-word-input">Word to Translate</label>
+        <input type="text" id="modal-word-input" class="form-input" placeholder="उदा. शजर-ए-रहगुज़र">
+      </div>
+      
+      <div class="form-group">
+        <label class="form-label" for="modal-meaning-input">Handwritten Translation / Meaning</label>
+        <input type="text" id="modal-meaning-input" class="form-input" placeholder="उदा. रास्ते का पेड़">
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="modal-position-select">Meaning Display Alignment</label>
+        <select id="modal-position-select" class="form-select">
+          <option value="top">Display Above Word (Top)</option>
+          <option value="bottom">Display Below Word (Bottom)</option>
+        </select>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn-secondary" onclick="closeAnnotationModal()">Cancel</button>
+        <button class="btn-primary" onclick="saveAnnotationFromModal()">Save Annotation</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Link external app.js -->
+  <script src="./app.js"></script>
+</body>
+</html>
