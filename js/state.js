@@ -106,8 +106,24 @@ let ghazals = [];
 let curGhazalIndex = 0;
 let curCoupletIndex = 0;
 
-// Dynamic load: Pulls ghazals.json from repo, fallback to LocalStorage, fallback to Defaults
+// Dynamic load: Prioritizes LocalStorage edits, fallback to ghazals.json repo presets, fallback to Defaults
 async function loadCatalogFromStorage() {
+  const data = localStorage.getItem('ghazal_studio_hierarchical_catalog');
+  if (data) {
+    try {
+      const parsed = JSON.parse(data);
+      if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].couplets) {
+        ghazals = parsed;
+        renderGhazalSelectorUI();
+        switchGhazalProject(0);
+        console.log("Loaded ghazals from LocalStorage");
+        return;
+      }
+    } catch(e) {
+      console.warn("Failed to parse LocalStorage data. Falling back to repo presets.");
+    }
+  }
+
   try {
     const response = await fetch('./ghazals.json');
     if (response.ok) {
@@ -122,24 +138,12 @@ async function loadCatalogFromStorage() {
       }
     }
   } catch (err) {
-    console.warn("Failed to fetch ghazals.json. Falling back to LocalStorage.");
+    console.warn("Failed to fetch ghazals.json. Falling back to Defaults.");
   }
 
-  const data = localStorage.getItem('ghazal_studio_hierarchical_catalog');
-  if (data) {
-    try {
-      ghazals = JSON.parse(data);
-      if (!Array.isArray(ghazals) || ghazals.length === 0 || !ghazals[0].couplets) {
-        throw new Error("Invalid schema");
-      }
-    } catch(e) {
-      ghazals = JSON.parse(JSON.stringify(DEFAULT_PRESET_GHAZALS));
-    }
-  } else {
-    ghazals = JSON.parse(JSON.stringify(DEFAULT_PRESET_GHAZALS));
-    saveCatalogToStorage();
-  }
-  
+  // Fallback to defaults
+  ghazals = JSON.parse(JSON.stringify(DEFAULT_PRESET_GHAZALS));
+  saveCatalogToStorage();
   renderGhazalSelectorUI();
   switchGhazalProject(0);
 }

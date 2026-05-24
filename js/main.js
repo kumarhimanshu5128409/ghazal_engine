@@ -38,6 +38,12 @@ window.addEventListener('DOMContentLoaded', () => {
   initCanvasNavigation(); // Enable dynamic mouse scroll & touch swipe navigation on the preview canvas
 });
 
+// Prompt warning before page reload / tab close to prevent accidental data loss
+window.addEventListener('beforeunload', (e) => {
+  e.preventDefault();
+  e.returnValue = ''; // Standard trigger for Chrome/Safari tab exit warnings
+});
+
 // Tab Switching Navigation Logic
 function switchTab(tabName) {
   // Hide all tab content panels
