@@ -536,9 +536,9 @@ input[type="range"]::-webkit-slider-thumb:hover {
   background-repeat: no-repeat;
 }
 
-/* Scale down to 48% (518.4px) for elegant workspace display */
+/* Scale down dynamically for elegant workspace display across all screen sizes */
 .preview-mode {
-  transform: scale(0.48);
+  transform: scale(var(--card-scale, 0.48));
   transform-origin: top left;
   box-shadow: 0 30px 70px rgba(0, 0, 0, 0.4);
 }
@@ -966,5 +966,8 @@ input[type="range"]::-webkit-slider-thumb:hover {
   .bottom-bar {
     position: fixed;
     bottom: 20px;
+    max-width: 92%;
+    box-sizing: border-box;
+    justify-content: space-between;
   }
 }
