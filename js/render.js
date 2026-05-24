@@ -13,6 +13,10 @@ function updateCurrentSherText() {
   
   saveCatalogToStorage();
   renderCardCanvas();
+  
+  if (typeof syncBulkTextareas === 'function') {
+    syncBulkTextareas();
+  }
 }
 
 function updateSignatures() {

@@ -237,6 +237,7 @@ function switchGhazalProject(index) {
   }
 
   selectCouplet(0);
+  if (typeof syncBulkTextareas === 'function') syncBulkTextareas();
 }
 
 async function createNewGhazalProject() {
@@ -307,6 +308,7 @@ function createNewCouplet() {
   saveCatalogToStorage();
   renderGhazalSelectorUI(); // Update count in selector dropdown
   selectCouplet(curCoupletIndex + 1);
+  if (typeof syncBulkTextareas === 'function') syncBulkTextareas();
 }
 
 async function deleteCouplet(index) {
@@ -326,6 +328,7 @@ async function deleteCouplet(index) {
     curCoupletIndex = activeGhazal.couplets.length - 1;
   }
   selectCouplet(curCoupletIndex);
+  if (typeof syncBulkTextareas === 'function') syncBulkTextareas();
 }
 
 function moveCouplet(index, direction) {
@@ -343,6 +346,7 @@ function moveCouplet(index, direction) {
   else if (curCoupletIndex === targetIndex) curCoupletIndex = index;
 
   selectCouplet(curCoupletIndex);
+  if (typeof syncBulkTextareas === 'function') syncBulkTextareas();
 }
 
 async function resetToPresets() {
@@ -481,4 +485,99 @@ function closeCustomDialog() {
   const modal = document.getElementById('custom-dialog-modal');
   if (modal) modal.classList.remove('active');
   dialogResolve = null;
+}
+
+// Synchronize the bulk edit textareas with the currently loaded active Ghazal couplets list
+function syncBulkTextareas() {
+  const activeGhazal = ghazals[curGhazalIndex];
+  if (!activeGhazal || !activeGhazal.couplets) return;
+
+  const hindiTextarea = document.getElementById('textarea-bulk-hindi');
+  const englishTextarea = document.getElementById('textarea-bulk-english');
+
+  if (hindiTextarea) {
+    const lines = [];
+    activeGhazal.couplets.forEach((c, idx) => {
+      // Put a single empty line after each two lines as a separator
+      if (idx > 0) {
+        lines.push('');
+      }
+      lines.push(c['line 1'] || '');
+      lines.push(c['line 2'] || '');
+    });
+    // Trim trailing empty lines to look clean
+    while (lines.length > 0 && lines[lines.length - 1] === '') {
+      lines.pop();
+    }
+    hindiTextarea.value = lines.join('\n');
+  }
+
+  if (englishTextarea) {
+    const lines = [];
+    activeGhazal.couplets.forEach((c, idx) => {
+      if (idx > 0) {
+        lines.push('');
+      }
+      lines.push(c['english line 1'] || '');
+      lines.push(c['english line 2'] || '');
+    });
+    while (lines.length > 0 && lines[lines.length - 1] === '') {
+      lines.pop();
+    }
+    englishTextarea.value = lines.join('\n');
+  }
+}
+
+// Parse lines in bulk edit textareas and update all slides in real-time
+async function applyBulkGhazalText() {
+  const activeGhazal = ghazals[curGhazalIndex];
+  if (!activeGhazal) return;
+
+  const hindiText = document.getElementById('textarea-bulk-hindi')?.value || '';
+  const englishText = document.getElementById('textarea-bulk-english')?.value || '';
+
+  // Confirm overwrite to avoid accidental typing loss
+  if (activeGhazal.couplets && activeGhazal.couplets.length > 0) {
+    const confirmed = await showCustomConfirm("Bulk Update", "This will overwrite all existing couplet slides in this Ghazal project with the parsed lines. Do you want to proceed?");
+    if (!confirmed) return;
+  }
+
+  // Parse lines, robustly filtering out all completely empty lines or separators in between
+  const hindiLines = hindiText.split('\n')
+    .map(line => line.trim())
+    .filter(line => line !== '');
+    
+  const englishLines = englishText.split('\n')
+    .map(line => line.trim())
+    .filter(line => line !== '');
+
+  const maxLines = Math.max(hindiLines.length, englishLines.length);
+  const maxCouplets = Math.ceil(maxLines / 2);
+
+  if (maxCouplets === 0) {
+    // Keep at least one empty couplet
+    activeGhazal.couplets = [{
+      "line 1": "",
+      "line 2": "",
+      "english line 1": "",
+      "english line 2": "",
+      "meanings": {}
+    }];
+  } else {
+    const newCouplets = [];
+    for (let i = 0; i < maxCouplets; i++) {
+      newCouplets.push({
+        "line 1": hindiLines[2 * i] || "",
+        "line 2": hindiLines[2 * i + 1] || "",
+        "english line 1": englishLines[2 * i] || "",
+        "english line 2": englishLines[2 * i + 1] || "",
+        "meanings": {}
+      });
+    }
+    activeGhazal.couplets = newCouplets;
+  }
+
+  saveCatalogToStorage();
+  renderGhazalSelectorUI();
+  selectCouplet(0);
 }
