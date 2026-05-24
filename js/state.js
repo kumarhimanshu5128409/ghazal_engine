@@ -239,16 +239,19 @@ function createNewCouplet() {
     "meanings": {}
   };
 
-  activeGhazal.couplets.push(newSher);
+  activeGhazal.couplets.splice(curCoupletIndex + 1, 0, newSher);
   saveCatalogToStorage();
   renderGhazalSelectorUI(); // Update count in selector dropdown
-  selectCouplet(activeGhazal.couplets.length - 1);
+  selectCouplet(curCoupletIndex + 1);
 }
 
 function deleteCouplet(index) {
   const activeGhazal = ghazals[curGhazalIndex];
   if (activeGhazal.couplets.length <= 1) {
     alert("You must keep at least one couplet in your Ghazal catalog.");
+    return;
+  }
+  if (!confirm("Are you sure you want to delete this active couplet slide?")) {
     return;
   }
   activeGhazal.couplets.splice(index, 1);

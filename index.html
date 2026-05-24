@@ -23,7 +23,6 @@
     <!-- Tabs Navigation (Perfect size same on desktop & mobile) -->
     <div class="tabs-nav">
       <button class="tab-btn active" onclick="switchTab('ghazal')">Ghazal</button>
-      <button class="tab-btn" onclick="switchTab('couplets')">Slides</button>
       <button class="tab-btn" onclick="switchTab('lines')">Lines</button>
       <button class="tab-btn" onclick="switchTab('style')">Style</button>
     </div>
@@ -54,26 +53,6 @@
       <div class="form-group">
         <label class="form-label" for="input-handle">Signature Handle (Top Right)</label>
         <input type="text" id="input-handle" class="form-input" placeholder="@thoughtskumar" oninput="updateSignatures()" />
-      </div>
-    </div>
-
-    <!-- TAB 2: COUPLETS LIST -->
-    <div id="tab-couplets" class="tab-content">
-      <div class="section-title">Couplets (Slides)</div>
-      <div style="display: flex; gap: 8px; margin-bottom: 12px;">
-        <button class="btn-primary" style="flex: 1; font-size: 11px; padding: 8px 10px;" onclick="createNewSher()">+ Add New Sher</button>
-        <button class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px 10px;" onclick="resetToPresets()">Reset All</button>
-      </div>
-      <div class="sher-list-container" id="saved-shers-list">
-        <!-- Saved shers list items go here -->
-      </div>
-      <div class="section-title">Backup & Restore</div>
-      <div style="display: flex; gap: 8px;">
-        <button class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px;" onclick="exportCatalog()">Export JSON</button>
-        <label class="btn-secondary" style="flex: 1; font-size: 11px; padding: 8px; cursor: pointer; text-align: center;">
-          Import JSON
-          <input type="file" id="import-json-file" style="display:none;" onchange="importCatalog(event)" accept=".json">
-        </label>
       </div>
     </div>
 
@@ -275,12 +254,23 @@
 
     <!-- Floating Pill Shape bar at bottom -->
     <div class="bottom-bar">
+      <!-- Left: Pagination/Nav dots -->
       <div class="nav" id="nav-dots">
         <!-- Switch buttons populated by app.js -->
       </div>
-      <div class="action-btns">
-        <button class="dl-btn" onclick="downloadSingleImage()">↓ Current</button>
-        <button class="dl-btn dl-all-btn" id="dl-all-btn" onclick="downloadAllImages()">↓ Save All 7</button>
+      
+      <!-- Mid Section: Couplet slide operations (+, ↑, ↓, 🗑) -->
+      <div class="couplet-ops" style="display: flex; gap: 6px; align-items: center; border-left: 1px solid rgba(255, 255, 255, 0.08); padding-left: 10px; margin-left: 4px;">
+        <button class="dl-btn" onclick="createNewCouplet()" title="Add slide after current" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 16px; font-weight: 700; min-width: 32px; line-height: 1;">+</button>
+        <button class="dl-btn" onclick="moveCouplet(curCoupletIndex, -1)" title="Move slide up" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; font-weight: 700; min-width: 32px; line-height: 1;">↑</button>
+        <button class="dl-btn" onclick="moveCouplet(curCoupletIndex, 1)" title="Move slide down" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; font-weight: 700; min-width: 32px; line-height: 1;">↓</button>
+        <button class="dl-btn" onclick="deleteCouplet(curCoupletIndex)" title="Delete current slide" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 13px; min-width: 32px; color: #ef4444; border-color: rgba(239, 68, 68, 0.2); background: rgba(239, 68, 68, 0.05); line-height: 1;">🗑</button>
+      </div>
+
+      <!-- Right: Action downloads as clean single icons -->
+      <div class="action-btns" style="display: flex; gap: 6px; align-items: center; border-left: 1px solid rgba(255, 255, 255, 0.08); padding-left: 10px;">
+        <button class="dl-btn" onclick="downloadSingleImage()" title="Download current slide" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; min-width: 32px; line-height: 1;">↓</button>
+        <button class="dl-btn dl-all-btn" id="dl-all-btn" onclick="downloadAllImages()" title="Download all slides" style="width: 32px; height: 32px; padding: 0; display: inline-flex; align-items: center; justify-content: center; border-radius: 50%; font-size: 14px; min-width: 32px; line-height: 1;">⤓</button>
       </div>
     </div>
   </div>

@@ -1062,12 +1062,24 @@ input[type="range"]::-webkit-slider-thumb:hover {
     bottom: 8px;
     left: 50%;
     transform: translateX(-50%);
-    max-width: 95%;
+    max-width: 98%;
     width: max-content;
-    padding: 6px 12px;
+    padding: 6px 8px;
     border-radius: 30px;
-    gap: 10px;
+    gap: 6px;
     box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  }
+
+  /* Make all buttons inside the floating bar compact on mobile to guarantee flawless fit */
+  .bottom-bar button, .bottom-bar .nav button {
+    width: 28px !important;
+    height: 28px !important;
+    min-width: 28px !important;
+    font-size: 12px !important;
+    padding: 0 !important;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
   }
   
   /* Hide inactive numeric buttons on mobile/tablet to fit both navigation & downloads in a single row */
@@ -1076,15 +1088,14 @@ input[type="range"]::-webkit-slider-thumb:hover {
   }
 
   /* Compact actions and download buttons for mobile */
-  .action-btns {
-    padding-left: 8px;
-    gap: 4px;
+  .action-btns, .couplet-ops {
+    padding-left: 6px !important;
+    gap: 4px !important;
+    margin-left: 0 !important;
   }
   
   .dl-btn {
-    padding: 6px 12px;
-    font-size: 11px;
-    border-radius: 16px;
+    border-radius: 50% !important;
   }
 
   .sher-list-container {
